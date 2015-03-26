@@ -1,13 +1,14 @@
 <project name="mustache-ant-test" default="test">
 	
 	<target name="init">
-		<typedef name="mustache" classname="com.samskivert.mustache.ant.MustacheFilter">
+		<typedef resource="com/github/patjlm/ant/mustache/antlib.xml">
 			<classpath>
-				<path location="target/jmustache-ant-1.11-SNAPSHOT.jar" />
+				<path location="../target/mustache-ant-0.1-SNAPSHOT.jar" />
 			</classpath>
 		</typedef>
 		<property name="\n" value="${line.separator}" />
 	</target>
+
 	<target name="test" depends="init">
 		<loadfile property="expected">
 			<fileset file="ant-mustache.expected" />

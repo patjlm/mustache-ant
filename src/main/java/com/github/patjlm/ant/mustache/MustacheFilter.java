@@ -1,4 +1,4 @@
-package net.patjlm.ant.mustache;
+package com.github.patjlm.ant.mustache;
 
 import java.io.FileInputStream;
 import java.io.IOException;

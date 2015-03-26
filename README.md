@@ -8,12 +8,12 @@ It is to be used in a [Filterchain](http://ant.apache.org/manual/Types/filtercha
 Installation
 ============
 
-Download the JMustache jar file and store it somewhere accessible.
+Download the mustache-ant jar file and store it somewhere accessible.
 You can then define the mustache filter in your ant script as follows:
 
-	<typedef name="mustache" classname="com.samskivert.mustache.ant.MustacheFilter">
+	<typedef resource="com/github/patjlm/ant/mustache/antlib.xml">
 		<classpath>
-			<path location="${jmustache.jar}" />
+			<path location="${mustache-ant.jar}" />
 		</classpath>
 	</typedef>
 

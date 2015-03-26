@@ -2,7 +2,7 @@
 // JMustache - A Java implementation of the Mustache templating language
 // http://github.com/samskivert/jmustache/blob/master/LICENSE
 
-package net.patjlm.ant.mustache;
+package com.github.patjlm.ant.mustache;
 
 import static org.junit.Assert.assertEquals;
 
@@ -12,6 +12,8 @@ import java.util.Map.Entry;
 
 import org.apache.tools.ant.Project;
 import org.junit.Test;
+
+import com.github.patjlm.ant.mustache.MustacheFilter;
 
 /**
  * Various unit tests.
