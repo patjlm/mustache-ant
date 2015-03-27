@@ -1,9 +1,10 @@
-# mustache-ant
-A Mustache implementation for ant scripts, based on JMustache
+mustache-ant
+============
 
-This is an [Ant](http://ant.apache.org/) filter to compute [Mustache](http://mustache.github.io/) templates based on [JMustache](https://github.com/samskivert/jmustache).
+A Mustache implementation for ant scripts, based on JMustache. This is an [Ant](http://ant.apache.org/) filter to compute [Mustache](http://mustache.github.io/) templates based on [JMustache](https://github.com/samskivert/jmustache). Just as JMustache, one of the aim is to limit the number of dependencies: only the mustache-ant jar files needs to be downloaded in order to benefit from it.
 
 It is to be used in a [Filterchain](http://ant.apache.org/manual/Types/filterchain.html) - [TokenFilter](http://ant.apache.org/manual/Types/filterchain.html#tokenfilter) using the [FileTokenizer](http://ant.apache.org/manual/Types/filterchain.html#filetokenizer).
+This allows to process mustache templates in any ant task supporting filterchains, like copy, loadfile, concat, ... It also means several files can be processed at once. 
 
 Installation
 ============
