@@ -52,6 +52,12 @@ public class MustacheFilter extends ChainableReaderFilter {
 	private Boolean removePrefix = false;
 
 	/**
+	 * the regular expression pattern used to parse boolean property names.
+	 */
+	private String booleanRegex = "^.+?$";
+	// other example of boolean regex: "^is.+?"
+
+	/**
 	 * Whether to support list parsing in property names
 	 */
 	private Boolean supportLists = true;
@@ -110,6 +116,14 @@ public class MustacheFilter extends ChainableReaderFilter {
 		this.removePrefix = removePrefix;
 	}
 
+	public String getBooleanRegex() {
+		return booleanRegex;
+	}
+
+	public void setBooleanRegex(String booleanRegex) {
+		this.booleanRegex = booleanRegex;
+	}
+
 	public void setSupportLists(Boolean supportLists) {
 		this.supportLists = supportLists;
 	}
@@ -143,15 +157,15 @@ public class MustacheFilter extends ChainableReaderFilter {
 	 * returns the output according to the defined data model
 	 */
 	public String filter(String text) {
-		getProject().log("Mustache DataModel: " + getDataModel().toString(),
+		getProject().log("Mustache Data: " + getData().toString(),
 				Project.MSG_DEBUG);
 		Template tmpl = Mustache.compiler().defaultValue(defaultValue)
 				.strictSections(strictSections).escapeHTML(escapeHTML)
 				.compile(text);
-		return tmpl.execute(getDataModel());
+		return tmpl.execute(getData());
 	}
 
-	private Map<String, Object> _dataModel = null;
+	private MustacheData _data = null;
 
 	/**
 	 * gets the data model, building it from project properties and/or data file
@@ -159,13 +173,13 @@ public class MustacheFilter extends ChainableReaderFilter {
 	 * 
 	 * @return the data model Map
 	 */
-	private Map<String, Object> getDataModel() {
-		if (_dataModel == null) {
-			_dataModel = new HashMap<String, Object>();
+	private MustacheData getData() {
+		if (_data == null) {
+			_data = new MustacheData(getProject(), booleanRegex, supportLists, listIdName, listRegex);
 			addProjectProperties();
 			addSrcFile();
 		}
-		return _dataModel;
+		return _data;
 	}
 
 	/**
@@ -210,167 +224,12 @@ public class MustacheFilter extends ChainableReaderFilter {
 		while (it.hasNext()) {
 			String key = (String) it.next();
 			if (prefix == null || key.startsWith(prefix)) {
-				Object value = computeValue(key, props.get(key));
+				Object value = props.get(key);
 				if (removePrefix && prefix != null) {
 					key = key.substring(prefix.length());
 				}
-				add(_dataModel, key, value);
+				_data.put(key, value);
 			}
 		}
-	}
-
-	/**
-	 * Adds a single key/value pair inside the specified Map. This map could be
-	 * the datamodel itself or a sub-map in case of lists. The key will be
-	 * parsed for a list item
-	 * 
-	 * @param map
-	 *            the map to insert into
-	 * @param key
-	 *            the key to insert
-	 * @param value
-	 *            the value to insert
-	 * @return the modified map
-	 */
-	private Map<String, Object> add(Map<String, Object> map, String key,
-			Object value) {
-		map.put(key, value);
-		handleList(map, key, value);
-		return map;
-	}
-
-	/**
-	 * Verifies if the provided key should be considered as a list item and
-	 * creates the corresponding list objects in the map if needed
-	 * 
-	 * @param map
-	 *            the map to insert the list into
-	 * @param key
-	 *            the key to be parsed as a list
-	 * @param value
-	 *            the value ton insert
-	 */
-	private void handleList(Map<String, Object> map, String key, Object value) {
-		if (supportLists && getListRegex().matches(key)) {
-			ListKeyParser parser = new ListKeyParser(key);
-			addList(map, parser.rootKey, parser.id, parser.subKey, value);
-		}
-	}
-
-	/**
-	 * Adds or updates a list into the specified Map, creating the necessary
-	 * List and Map objects
-	 * 
-	 * @param map
-	 *            the map to insert or update the list into
-	 * @param rootKey
-	 *            the list name
-	 * @param id
-	 *            the id of the element being inserted in the list
-	 * @param subKey
-	 *            the key of the value to put in the list element
-	 * @param value
-	 *            the value to put in the list element
-	 */
-	private void addList(Map<String, Object> map, String rootKey, String id,
-			String subKey, Object value) {
-		List<Map<String, Object>> listContext = (List<Map<String, Object>>) map
-				.get(rootKey);
-		if (listContext == null) {
-			listContext = new ArrayList<Map<String, Object>>();
-			map.put(rootKey, listContext);
-		}
-
-		Map<String, Object> foundMap = null;
-		for (Map<String, Object> subMap : listContext) {
-			if (id.equals(subMap.get(listIdName))) {
-				foundMap = subMap;
-				break;
-			}
-		}
-		if (foundMap == null) {
-			foundMap = new HashMap<String, Object>();
-			foundMap.put(listIdName, id);
-			listContext.add(foundMap);
-			Collections.sort(listContext,
-					new Comparator<Map<String, Object>>() {
-						public int compare(Map<String, Object> m1,
-								Map<String, Object> m2) {
-							return ((String) m1.get(listIdName))
-									.compareTo((String) m2.get(listIdName));
-						}
-					});
-		}
-		add(foundMap, subKey, value);
-	}
-
-	private Regexp _listRegexp = null;
-
-	/**
-	 * get an Ant regexp from the given standard regex pattern
-	 * 
-	 * @return the ant regexp
-	 */
-	private Regexp getListRegex() {
-		if (_listRegexp == null) {
-			RegularExpression _listRegularExpression = new RegularExpression();
-			_listRegularExpression.setPattern(listRegex);
-			_listRegexp = _listRegularExpression.getRegexp(getProject());
-		}
-		return _listRegexp;
-	}
-
-	/**
-	 * This class splits the key string provided to its constructor into the
-	 * root key, the id and the sub key of a list item
-	 * 
-	 * @author Patrick
-	 *
-	 */
-	private class ListKeyParser {
-		/**
-		 * the list name
-		 */
-		public String rootKey = null;
-
-		/**
-		 * the id of the list element
-		 */
-		public String id = null;
-
-		/**
-		 * the key to put into the list element
-		 */
-		public String subKey = null;
-
-		/**
-		 * constructor: parses the key into root key, id and sub-key
-		 * 
-		 * @param key
-		 *            the key to parse
-		 */
-		public ListKeyParser(String key) {
-			Vector<?> groups = getListRegex().getGroups(key);
-			rootKey = (String) groups.get(1);
-			id = (String) groups.get(2);
-			subKey = (String) groups.get(3);
-		}
-	}
-
-	/**
-	 * computes the value into a Boolean if needed
-	 * 
-	 * @param key
-	 *            the key to evaluate, which should match the boolean pattern in
-	 *            order to be treated as a boolean
-	 * @param value
-	 *            the value to translate into a boolean if needed
-	 * @return either a corresponding boolean or the value itself
-	 */
-	private Object computeValue(String key, Object value) {
-		if (key.endsWith("?") && "false".equals(value)) {
-			return false;
-		}
-		return value;
 	}
 }

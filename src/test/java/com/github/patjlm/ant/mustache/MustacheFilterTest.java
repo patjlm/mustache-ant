@@ -27,7 +27,7 @@ public class MustacheFilterTest {
 
 	@Test
 	public void testPrefixRemoved() {
-		test(get("myprefix.", true), "{{foo}}", "bar",
+		test(getFilter("myprefix.", true), "{{foo}}", "bar",
 				context("myprefix.foo", "bar", "foo", "IGNORED"));
 	}
 
@@ -53,6 +53,14 @@ public class MustacheFilterTest {
 	}
 
 	@Test
+	public void testBooleanPattern() {
+		MustacheFilter m = new MustacheFilter();
+		m.setBooleanRegex("^is.+?$");
+		test(m, "{{#isFoo?}}isFoo? is True{{/isFoo?}}{{^isFoo?}}isFoo? is False{{/isFoo?}}",
+			"isFoo? is False", context("isFoo?", "false"));
+	}
+
+	@Test
 	public void testList() {
 		test(new MustacheFilter(),
 				"{{#mylist}}{{__id__}}: {{p1}}-{{p2}}\n{{/mylist}}",
@@ -72,7 +80,7 @@ public class MustacheFilterTest {
 						"mylist1.2.mylist2.2.p1", "2.2.1", "mylist1.2.mylist2.2.p2", "2.2.2"));
 	}
 
-	protected MustacheFilter get(String prefix, Boolean removePrefix) {
+	protected MustacheFilter getFilter(String prefix, Boolean removePrefix) {
 		MustacheFilter m = new MustacheFilter();
 		if (prefix != null) {
 			m.setPrefix(prefix);

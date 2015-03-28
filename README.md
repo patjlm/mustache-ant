@@ -9,7 +9,10 @@ This allows to process mustache templates in any ant task supporting filterchain
 Installation
 ============
 
-Download the mustache-ant jar file and store it somewhere accessible.
+Download the mustache-ant jar from the
+[Maven Central Repository](http://search.maven.org/remotecontent?filepath=com/github/patjlm/mustache-ant/0.3/mustache-ant-0.3.jar)
+store it somewhere accessible to your ant script (${mustache-ant.jar} below).
+
 You can then define the mustache filter in your ant script as follows:
 
 	<typedef resource="com/github/patjlm/ant/mustache/antlib.xml">
@@ -17,6 +20,8 @@ You can then define the mustache filter in your ant script as follows:
 			<path location="${mustache-ant.jar}" />
 		</classpath>
 	</typedef>
+
+This will define a new ant filter called "mustache". Let's now see how to use it.
 
 Usage
 =====
@@ -48,6 +53,7 @@ All parameters are optional.
 | projectProperties | Boolean (true or false): should project properties be added to the data model | true           |
 | prefix            | Only project properties starting with this prefix will be used                | No prefix used |
 | removePrefix      | Boolean: should we remove the prefix (if specified) from the property name?   | false          |
+| booleanRegex      | The regex pattern used to match boolean properties                            | ^.+?$          |
 | supportLists      | Boolean. Adds list support (see below)                                        | true           |
 | listRegex         | The regex pattern to use to defined lists (see below)                   | (.+?)\\.(\\d+)\\.(.+) |
 | listIdName        | The name of the list id to be generated (see below)                           | \__id__         |
@@ -106,7 +112,7 @@ Boolean values
 ==============
 
 As the string "false" is not usually considered as actually False, a special treatment is needed for booleans.
-Properties ending by a question mark are treated as Booleans, specifically to be used as tests inside the templates.
+Properties ending by a question mark are treated as Booleans by default, specifically to be used as tests inside the templates.
 
 	mytrue? = true
 	myfalse? = false
@@ -137,3 +143,13 @@ Which outputs:
 	myfalse? is NOT valid (false or empty list), showing that!
 
 
+You can override the default boolean key pattern by using the option booleanRegex option.
+For example, if you want to prefix all your boolean properties with "is", you could use this kind of pattern:
+
+	booleanRegex="^is.+"
+
+You can then use it in your template:
+
+	{{#isThisTrue}}
+	isThisTrue is valid (not false nor empty list), showing this!
+	{{/isThisTrue}}
