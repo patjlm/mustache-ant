@@ -1,23 +1,13 @@
 package com.github.patjlm.ant.mustache;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.Hashtable;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
 import java.util.Properties;
-import java.util.Vector;
 
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.Project;
 import org.apache.tools.ant.filters.TokenFilter.ChainableReaderFilter;
-import org.apache.tools.ant.types.RegularExpression;
-import org.apache.tools.ant.util.regexp.Regexp;
 
 import com.samskivert.mustache.Mustache;
 import com.samskivert.mustache.Template;
@@ -81,7 +71,7 @@ public class MustacheFilter extends ChainableReaderFilter {
 	 * A file name from which data model properties should be loaded from.
 	 * Disabled by default.
 	 */
-	private String dataFile = null;
+	private File dataFile = null;
 
 	// JMustache settings
 
@@ -116,10 +106,6 @@ public class MustacheFilter extends ChainableReaderFilter {
 		this.removePrefix = removePrefix;
 	}
 
-	public String getBooleanRegex() {
-		return booleanRegex;
-	}
-
 	public void setBooleanRegex(String booleanRegex) {
 		this.booleanRegex = booleanRegex;
 	}
@@ -132,7 +118,7 @@ public class MustacheFilter extends ChainableReaderFilter {
 		this.listIdName = listIdName;
 	}
 
-	public void setDataFile(String dataFile) {
+	public void setDataFile(File dataFile) {
 		this.dataFile = dataFile;
 	}
 
@@ -187,7 +173,7 @@ public class MustacheFilter extends ChainableReaderFilter {
 	 */
 	private void addProjectProperties() {
 		if (projectProperties) {
-			addProperties(getProject().getProperties(), prefix, removePrefix);
+			getData().addProperties(getProject().getProperties(), prefix, removePrefix);
 		}
 	}
 
@@ -202,34 +188,7 @@ public class MustacheFilter extends ChainableReaderFilter {
 			} catch (IOException e) {
 				throw new BuildException(e);
 			}
-			addProperties(props, null, false);
-		}
-	}
-
-	/**
-	 * Adds a set of properties to the datamodel
-	 * 
-	 * @param props
-	 *            the properties to add
-	 * @param prefix
-	 *            the prefix that properties should have in order to be
-	 *            considered. If null, all properties will be considered.
-	 * @param removePrefix
-	 *            whether the prefix should be removed in the data model key
-	 *            name
-	 */
-	private void addProperties(Hashtable<?, ?> props, String prefix,
-			Boolean removePrefix) {
-		Iterator<?> it = props.keySet().iterator();
-		while (it.hasNext()) {
-			String key = (String) it.next();
-			if (prefix == null || key.startsWith(prefix)) {
-				Object value = props.get(key);
-				if (removePrefix && prefix != null) {
-					key = key.substring(prefix.length());
-				}
-				_data.put(key, value);
-			}
+			getData().addProperties(props, null, false);
 		}
 	}
 }
