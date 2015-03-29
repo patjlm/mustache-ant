@@ -1,8 +1,13 @@
 Mustache Ant Release notes
 ==========================
 
-Next (Mustache Ant 0.4 ?)
+Next (Mustache Ant 0.5 ?)
 -------------------------
+
+Mustache Ant 0.4
+-------------------------
+
+Download [here](http://search.maven.org/remotecontent?filepath=com/github/patjlm/mustache-ant/0.4/mustache-ant-0.4.jar)
 
 * boolean key patterns can now be customized with the option booleanRegex
 
