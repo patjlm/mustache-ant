@@ -48,19 +48,19 @@ Parameters
 
 All parameters are optional.
 
-| Parameter         | Description                                                                   | Default        |
-|-------------------|-------------------------------------------------------------------------------|----------------|
-| projectProperties | Boolean (true or false): should project properties be added to the data model | true           |
-| prefix            | Only project properties starting with this prefix will be used                | No prefix used |
-| removePrefix      | Boolean: should we remove the prefix (if specified) from the property name?   | false          |
-| booleanRegex      | The regex pattern used to match boolean properties                            | ^.+?$          |
-| supportLists      | Boolean. Adds list support (see below)                                        | true           |
-| listRegex         | The regex pattern to use to defined lists (see below)                     | (.+?)\.(\d+)\.(.+) |
-| listIdName        | The name of the list id to be generated (see below)                           | \__id__         |
-| dataFile          | A property file containing datamodel key and values                           | None           |
-| defaultValue      | As JMustache defaultValue(), provides a default to non-defined keys | No default, fails on missing|
+| Parameter         | Description                                                                   | Default            |
+|-------------------|-------------------------------------------------------------------------------|--------------------|
+| projectProperties | Boolean (true or false): should project properties be added to the data model | true               |
+| prefix            | Only project properties starting with this prefix will be used                | No prefix used     |
+| removePrefix      | Boolean: should we remove the prefix (if specified) from the property name?   | false              |
+| booleanRegex      | The regex pattern used to match boolean properties                            | ^.+?$              |
+| supportLists      | Boolean. Adds list support (see below)                                        | true               |
+| listRegex         | The regex pattern to use to defined lists (see below)                         | (.+?)\.(\d+)\.(.+) |
+| listIdName        | The name of the list id to be generated (see below)                           | \__id__            |
+| dataFile          | A property file containing datamodel key and values                           | None               |
+| defaultValue      | As JMustache defaultValue(), provides a default to non-defined keys | No default, fails on missing |
 | strictSections    | As JMustache strictSections(), defines if section referring to a non-defined value should fail | false |
-| escapeHTML        | As JMustache escapeHTML(), defines if outputed HTML should be escaped         | false          |
+| escapeHTML        | As JMustache escapeHTML(), defines if outputed HTML should be escaped         | false              |
 
 Lists support
 =============
@@ -96,6 +96,25 @@ The output would be:
 	01.prop2 = value-1-2
 	02.prop1 = value-2-1
 	02.prop2 = value-2-2
+
+Sub-lists are supported as well. For example, you could have the following properties:
+
+	mylist1.1.mylist2.1.p1=1.1.1
+	mylist1.1.mylist2.1.p2=1.1.2
+	mylist1.1.mylist2.2.p1=1.2.1
+	mylist1.1.mylist2.2.p2=1.2.2
+	mylist1.2.mylist2.1.p1=2.1.1
+	mylist1.2.mylist2.1.p2=2.1.2
+	mylist1.2.mylist2.2.p1=2.2.1
+	mylist1.2.mylist2.2.p2=2.2.2
+	
+and use them in the template
+
+	{{#mylist1}}
+		{{#mylist2}}
+			{{p1}}-{{p2}}
+		{{/mylist2}}
+	{{/mylist1}}
    
 Note that you can override the default pattern. For example, you may prefer to use a notation with square brackets:
 
