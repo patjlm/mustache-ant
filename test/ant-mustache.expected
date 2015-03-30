@@ -24,3 +24,11 @@ mylist = [{prop2=value-1-2, prop1=value-1-1, __id__=01}, {prop2=value-2-2, prop1
 
 4. direct access:
 l[02].b = L[02].B
+
+5 sub templates (partials)
+>	This is from a sub template subdir/sub.template
+>
+>	Variables are accessible:
+>	v = V
+>	k.v = K.V
+>

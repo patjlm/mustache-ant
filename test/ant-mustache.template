@@ -46,3 +46,6 @@ mylist = {{mylist}}
 
 4. direct access:
 l[02].b = {{l[02].b}}
+
+5 sub templates (partials)
+{{>subdir/sub.template}}

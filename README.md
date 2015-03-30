@@ -53,7 +53,7 @@ All parameters are optional.
 | projectProperties | Boolean (true or false): should project properties be added to the data model | true               |
 | prefix            | Only project properties starting with this prefix will be used                | No prefix used     |
 | removePrefix      | Boolean: should we remove the prefix (if specified) from the property name?   | false              |
-| booleanRegex      | The regex pattern used to match boolean properties                            | ^.+?$              |
+| booleanRegex      | Since v0.4. The regex pattern used to match boolean properties                | ^.+?$              |
 | supportLists      | Boolean. Adds list support (see below)                                        | true               |
 | listRegex         | The regex pattern to use to defined lists (see below)                         | (.+?)\.(\d+)\.(.+) |
 | listIdName        | The name of the list id to be generated (see below)                           | \__id__            |
@@ -61,6 +61,9 @@ All parameters are optional.
 | defaultValue      | As JMustache defaultValue(), provides a default to non-defined keys | No default, fails on missing |
 | strictSections    | As JMustache strictSections(), defines if section referring to a non-defined value should fail | false |
 | escapeHTML        | As JMustache escapeHTML(), defines if outputed HTML should be escaped         | false              |
+| templateDir       | Since v0.5. Base directory from which partials can be loaded | None. Partials not supported by default | 
+
+An example build script is available in the [test subfolder](https://github.com/patjlm/mustache-ant/tree/master/test) of this project.
 
 Lists support
 =============

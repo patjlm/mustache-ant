@@ -1,0 +1,6 @@
+>	This is from a sub template subdir/sub.template
+>
+>	Variables are accessible:
+>	v = {{v}}
+>	k.v = {{k.v}}
+>

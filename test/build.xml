@@ -3,7 +3,7 @@
 	<target name="init">
 		<typedef resource="com/github/patjlm/ant/mustache/antlib.xml">
 			<classpath>
-				<path location="../target/mustache-ant-0.1-SNAPSHOT.jar" />
+				<path location="../target/mustache-ant-0.5-SNAPSHOT.jar" />
 			</classpath>
 		</typedef>
 		<property name="\n" value="${line.separator}" />
@@ -19,7 +19,7 @@
 			<filterchain>
 				<tokenfilter>
 					<filetokenizer />
-					<mustache projectProperties="false" dataFile="ant-mustache.properties" strictSections="false" />
+					<mustache projectProperties="false" dataFile="ant-mustache.properties" strictSections="false" templateDir="${basedir}" />
 				</tokenfilter>
 			</filterchain>
 		</loadfile>
@@ -31,5 +31,8 @@
 				<not><equals arg1="${test1.output}" arg2="${expected}" /></not>
 			</condition>
 		</fail>
-		<property file="ant-mustache.properties" prefix="mustache" />	</target>
-	</project>
+		<echo>Template succesfully processed:
+${test1.output}
+</echo>
+	</target>
+</project>

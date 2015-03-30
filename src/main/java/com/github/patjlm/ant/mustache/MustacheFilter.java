@@ -2,7 +2,9 @@ package com.github.patjlm.ant.mustache;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileReader;
 import java.io.IOException;
+import java.io.Reader;
 import java.util.Properties;
 
 import org.apache.tools.ant.BuildException;
@@ -10,6 +12,8 @@ import org.apache.tools.ant.Project;
 import org.apache.tools.ant.filters.TokenFilter.ChainableReaderFilter;
 
 import com.samskivert.mustache.Mustache;
+import com.samskivert.mustache.Mustache.Compiler;
+import com.samskivert.mustache.Mustache.TemplateLoader;
 import com.samskivert.mustache.Template;
 
 /**
@@ -93,6 +97,13 @@ public class MustacheFilter extends ChainableReaderFilter {
 	 * {@link com.samskivert.mustache.Mustache.Compiler#escapeHTML}.
 	 */
 	private boolean escapeHTML = false;
+	
+	/**
+	 * Base directory in which referenced partial templates can be found
+	 * {@link com.samskivert.mustache.Mustache.Compiler#withLoader}.
+	 * {@link com.samskivert.mustache.Mustache.TemplateLoader}.
+	 */
+	private File templateDir = null;
 
 	public void setProjectProperties(Boolean projectProperties) {
 		this.projectProperties = projectProperties;
@@ -138,6 +149,10 @@ public class MustacheFilter extends ChainableReaderFilter {
 		this.listRegex = listRegex;
 	}
 
+	public void setTemplateDir(File templateDir) {
+		this.templateDir = templateDir;
+	}
+
 	/**
 	 * The main method to implement the filter. Compiles the input text and
 	 * returns the output according to the defined data model
@@ -145,9 +160,21 @@ public class MustacheFilter extends ChainableReaderFilter {
 	public String filter(String text) {
 		getProject().log("Mustache Data: " + getData().toString(),
 				Project.MSG_DEBUG);
-		Template tmpl = Mustache.compiler().defaultValue(defaultValue)
-				.strictSections(strictSections).escapeHTML(escapeHTML)
-				.compile(text);
+		Compiler compiler = Mustache.compiler().defaultValue(defaultValue);
+		compiler = compiler.strictSections(strictSections).escapeHTML(escapeHTML);
+		if (templateDir != null) {
+			TemplateLoader loader = new Mustache.TemplateLoader() {
+			    public Reader getTemplate (String name) {
+			    	try {
+			    		return new FileReader(new File(templateDir, name));
+			    	} catch (Exception e) {
+			    		throw new BuildException(e);
+			    	}
+			    }
+			};
+			compiler = compiler.withLoader(loader);
+		}
+		Template tmpl = compiler.compile(text);
 		return tmpl.execute(getData());
 	}
 

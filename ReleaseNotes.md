@@ -4,6 +4,8 @@ Mustache Ant Release notes
 Next (Mustache Ant 0.5 ?)
 -------------------------
 
+* Add support for partials, using the attribute "templateDir".
+
 Mustache Ant 0.4
 -------------------------
 
