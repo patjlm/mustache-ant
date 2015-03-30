@@ -61,7 +61,17 @@ All parameters are optional.
 | defaultValue      | As JMustache defaultValue(), provides a default to non-defined keys | No default, fails on missing |
 | strictSections    | As JMustache strictSections(), defines if section referring to a non-defined value should fail | false |
 | escapeHTML        | As JMustache escapeHTML(), defines if outputed HTML should be escaped         | false              |
-| templateDir       | Since v0.5. Base directory from which partials can be loaded | None. Partials not supported by default | 
+| partialPath       | Since v0.5. A path-like structure in which [partials](https://github.com/samskivert/jmustache#partials) (aka sub-templates) can be searched for. Non-directories path elements will be ignored | None. Partials not supported by default |
+
+PartialPath can also be defined as an [XML element](https://ant.apache.org/manual/using.html#path) inside the mustache type.
+For example:
+
+		<mustache>
+			<partialPath>
+				<pathelement location="${partials.dir}" />
+			</partialPath>
+		</mustache>
+
 
 An example build script is available in the [test subfolder](https://github.com/patjlm/mustache-ant/tree/master/test) of this project.
 

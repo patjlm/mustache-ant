@@ -3,6 +3,7 @@
 	<target name="init">
 		<typedef resource="com/github/patjlm/ant/mustache/antlib.xml">
 			<classpath>
+				<path location="../target/classes" />
 				<path location="../target/mustache-ant-0.5-SNAPSHOT.jar" />
 			</classpath>
 		</typedef>
@@ -19,7 +20,12 @@
 			<filterchain>
 				<tokenfilter>
 					<filetokenizer />
-					<mustache projectProperties="false" dataFile="ant-mustache.properties" strictSections="false" templateDir="${basedir}" />
+					<mustache projectProperties="false" dataFile="ant-mustache.properties" strictSections="false">
+						<partialPath>
+							<pathelement location="subdir" />
+							<pathelement location="${basedir}" />
+						</partialPath>
+					</mustache>
 				</tokenfilter>
 			</filterchain>
 		</loadfile>

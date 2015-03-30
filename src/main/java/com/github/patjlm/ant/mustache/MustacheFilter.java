@@ -99,12 +99,12 @@ public class MustacheFilter extends ChainableReaderFilter {
 	private boolean escapeHTML = false;
 	
 	/**
-	 * Base directory in which referenced partial templates can be found
+	 * Path in which referenced partial templates can searched for
 	 * {@link com.samskivert.mustache.Mustache.Compiler#withLoader}.
 	 * {@link com.samskivert.mustache.Mustache.TemplateLoader}.
 	 */
-	private File templateDir = null;
-
+	private PartialPath partialPath = null;
+	
 	public void setProjectProperties(Boolean projectProperties) {
 		this.projectProperties = projectProperties;
 	}
@@ -149,8 +149,12 @@ public class MustacheFilter extends ChainableReaderFilter {
 		this.listRegex = listRegex;
 	}
 
-	public void setTemplateDir(File templateDir) {
-		this.templateDir = templateDir;
+	public void setPartialPath(PartialPath partialPath) {
+		this.partialPath = partialPath;
+	}
+
+	public void addPartialPath(PartialPath partialPath) {
+		this.partialPath = partialPath;
 	}
 
 	/**
@@ -162,17 +166,8 @@ public class MustacheFilter extends ChainableReaderFilter {
 				Project.MSG_DEBUG);
 		Compiler compiler = Mustache.compiler().defaultValue(defaultValue);
 		compiler = compiler.strictSections(strictSections).escapeHTML(escapeHTML);
-		if (templateDir != null) {
-			TemplateLoader loader = new Mustache.TemplateLoader() {
-			    public Reader getTemplate (String name) {
-			    	try {
-			    		return new FileReader(new File(templateDir, name));
-			    	} catch (Exception e) {
-			    		throw new BuildException(e);
-			    	}
-			    }
-			};
-			compiler = compiler.withLoader(loader);
+		if (partialPath != null) {
+			compiler = compiler.withLoader(partialPath.getLoader());
 		}
 		Template tmpl = compiler.compile(text);
 		return tmpl.execute(getData());
