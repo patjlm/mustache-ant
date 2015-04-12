@@ -37,7 +37,7 @@ Then push the git tags an the changes to origin.
 
 # Maven release perform
 
-	 mvn release:release
+	 mvn release:perform
 	 
 # Sonatype staging
 
