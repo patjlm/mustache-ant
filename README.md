@@ -10,7 +10,7 @@ Installation
 ============
 
 Download the mustache-ant jar from the
-[Maven Central Repository](http://search.maven.org/remotecontent?filepath=com/github/patjlm/mustache-ant/0.4/mustache-ant-0.4.jar)
+[Maven Central Repository](http://search.maven.org/remotecontent?filepath=com/github/patjlm/mustache-ant/1.0.0/mustache-ant-1.0.0.jar) or the [Sonatype release repository](https://oss.sonatype.org/content/repositories/releases/com/github/patjlm/mustache-ant/1.0.0/mustache-ant-1.0.0.jar),
 store it somewhere accessible to your ant script (${mustache-ant.jar} below).
 
 You can then define the mustache filter in your ant script as follows:
