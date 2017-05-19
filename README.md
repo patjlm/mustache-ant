@@ -62,6 +62,7 @@ All parameters are optional.
 | strictSections    | As JMustache strictSections(), defines if section referring to a non-defined value should fail | false |
 | escapeHTML        | As JMustache escapeHTML(), defines if outputed HTML should be escaped         | false              |
 | partialPath       | Since v1.0.0. A path-like structure in which [partials](https://github.com/samskivert/jmustache#partials) (aka sub-templates) can be searched for. Non-directories path elements will be ignored | None. Partials not supported by default |
+| emptyStringIsFalse| Since v1.1.0. Boolean (true or false): should empty string be treated as a false value, as in JavaScript mustache implementation. | false              |
 
 PartialPath can also be defined as an [XML element](https://ant.apache.org/manual/using.html#path) inside the mustache type.
 For example:
@@ -139,6 +140,28 @@ With such regex, the previous list would be written
 	mylist[01].prop2 = value 01-2
 	mylist[02].prop1 = value 02-1
 	mylist[02].prop2 = value 02-2
+	
+Empty value
+===========
+
+The empty value is supported since V1.1.0 by setting the emptyStringIsFalse option to "true".
+
+Consider the following properties:
+
+  myproperty.enable = 
+
+And this template
+
+  {{#myproperty}}myproperty exists (value={{myproperty}}){{/myproperty}}
+  {{^myproperty}}myproperty does not exist{{/myproperty}}
+ 
+In case emptyStringIsFalse option is set to false (default value), the output will be:
+
+  myproperty exists (value=)
+
+In case emptyStringIsFalse option is set to true, the output will be:
+
+  myproperty does not exist
 
 Boolean values
 ==============
@@ -175,7 +198,7 @@ Which outputs:
 	myfalse? is NOT valid (false or empty list), showing that!
 
 
-You can override the default boolean key pattern by using the option booleanRegex option.
+You can override the default boolean key pattern by using the booleanRegex option.
 For example, if you want to prefix all your boolean properties with "is", you could use this kind of pattern:
 
 	booleanRegex="^is.+"
@@ -185,3 +208,4 @@ You can then use it in your template:
 	{{#isThisTrue}}
 	isThisTrue is valid (not false nor empty list), showing this!
 	{{/isThisTrue}}
+	

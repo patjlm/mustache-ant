@@ -5,6 +5,7 @@
 package com.github.patjlm.ant.mustache;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -13,7 +14,7 @@ import java.util.Map.Entry;
 import org.apache.tools.ant.Project;
 import org.junit.Test;
 
-import com.github.patjlm.ant.mustache.MustacheFilter;
+import com.samskivert.mustache.MustacheException;
 
 /**
  * Various unit tests.
@@ -58,6 +59,50 @@ public class MustacheFilterTest {
 		m.setBooleanRegex("^is.+?$");
 		test(m, "{{#isFoo?}}isFoo? is True{{/isFoo?}}{{^isFoo?}}isFoo? is False{{/isFoo?}}",
 			"isFoo? is False", context("isFoo?", "false"));
+	}
+
+	@Test
+	public void testEmptyString() {
+		String template = "{{#myproperty}}myproperty exists (value={{myproperty}}){{/myproperty}}\n{{^myproperty}}myproperty does not exist{{/myproperty}}";
+		testEmptyString(false, false, template, "\nmyproperty does not exist", context());
+		testEmptyString(false, true, template, "\nmyproperty does not exist", context());
+
+		try {
+			testEmptyString(true, false, template, null, context());
+			fail("Expected MustacheException to be raised");
+		} catch (MustacheException e) {
+		}
+		try {
+			testEmptyString(true, true, template, null, context());
+			fail("Expected MustacheException to be raised");
+		} catch (MustacheException e) {
+		}
+
+		// The difference can be seen on this test case
+		// if the property value is empty, it is considered as not set
+		testEmptyString(false, false, template, "myproperty exists (value=)\n", context("myproperty", ""));
+		testEmptyString(false, true, template, "\nmyproperty does not exist", context("myproperty", ""));
+		testEmptyString(true, false, template, "myproperty exists (value=)\n", context("myproperty", ""));
+		testEmptyString(true, true, template, "\nmyproperty does not exist", context("myproperty", ""));
+
+		// This case should not happen with property files since values are
+		// trimmed
+		testEmptyString(false, false, template, "myproperty exists (value= )\n", context("myproperty", " "));
+		testEmptyString(false, true, template, "myproperty exists (value= )\n", context("myproperty", " "));
+		testEmptyString(true, false, template, "myproperty exists (value= )\n", context("myproperty", " "));
+		testEmptyString(true, true, template, "myproperty exists (value= )\n", context("myproperty", " "));
+
+		testEmptyString(false, false, template, "myproperty exists (value=1)\n", context("myproperty", "1"));
+		testEmptyString(false, true, template, "myproperty exists (value=1)\n", context("myproperty", "1"));
+		testEmptyString(true, false, template, "myproperty exists (value=1)\n", context("myproperty", "1"));
+		testEmptyString(true, true, template, "myproperty exists (value=1)\n", context("myproperty", "1"));
+	}
+
+	private void testEmptyString(boolean strictSections, boolean emptyStringIsFalse, String template, String expected, Map<String, String> context) {
+		MustacheFilter m = new MustacheFilter();
+		m.setStrictSections(strictSections);
+		m.setEmptyStringIsFalse(emptyStringIsFalse);
+		test(m, template, expected, context);
 	}
 
 	@Test
