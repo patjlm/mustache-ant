@@ -4,19 +4,18 @@ Mustache Ant Release notes
 Mustache Ant 1.1.0
 -------------------------
 
+Download [here](http://search.maven.org/remotecontent?filepath=com/github/patjlm/mustache-ant/1.1.0/mustache-ant-1.1.0.jar)
+
 * Accept new parameter "emptyStringIsFalse" to send to JMustache.
 * Upgrade JMustache dependency from 1.10 to 1.13
 
 Mustache Ant 1.0.0
 -------------------------
 
+Download [here](http://search.maven.org/remotecontent?filepath=com/github/patjlm/mustache-ant/1.0.0/mustache-ant-1.0.0.jar)
+
 * Add support for partials, using the attribute/element "templatePath".
 * Fix release:perform command
-
-Mustache Ant 1.0.0
--------------------------
-
-* Add support for partials, using the attribute/element "templatePath".
 
 Mustache Ant 0.4
 -------------------------
