@@ -94,7 +94,7 @@ An example may help here. Consider the following properties:
 	mylist.01.prop2 = value-1-2
 	mylist.02.prop1 = value-2-1
 	mylist.02.prop2 = value-2-2
-	
+
 And this template
 
 	mylist = {{mylist}}
@@ -102,7 +102,7 @@ And this template
 	{{__id__}}.prop1 = {{prop1}}
 	{{__id__}}.prop2 = {{prop2}}
 	{{/mylist}}
-	
+
 The output would be:
 
 	mylist = [{prop2=value-1-2, prop1=value-1-1, __id__=01}, {prop2=value-2-2, prop1=value-2-1, __id__=02}]
@@ -121,7 +121,7 @@ Sub-lists are supported as well. For example, you could have the following prope
 	mylist1.2.mylist2.1.p2=2.1.2
 	mylist1.2.mylist2.2.p1=2.2.1
 	mylist1.2.mylist2.2.p2=2.2.2
-	
+
 and use them in the template
 
 	{{#mylist1}}
@@ -140,7 +140,7 @@ With such regex, the previous list would be written
 	mylist[01].prop2 = value 01-2
 	mylist[02].prop1 = value 02-1
 	mylist[02].prop2 = value 02-2
-	
+
 Empty value
 ===========
 
@@ -162,7 +162,7 @@ In case emptyStringIsFalse option is set to false (default value), the output wi
 In case emptyStringIsFalse option is set to true, the output will be:
 
 	myproperty does not exist or is empty
-	
+
 Boolean values
 ==============
 
@@ -171,7 +171,7 @@ Properties ending by a question mark are treated as Booleans by default, specifi
 
 	mytrue? = true
 	myfalse? = false
-	
+
 In the template:
 
 	mytrue? = {{mytrue?}}
@@ -181,7 +181,7 @@ In the template:
 	{{^mytrue?}}
 	mytrue is NOT valid (false or empty list), showing that!
 	{{/mytrue?}}
-	
+
 	myfalse? = {{myfalse?}}
 	{{#myfalse?}}
 	myfalse is valid (not false nor empty list), showing this!
@@ -208,7 +208,7 @@ You can then use it in your template:
 	{{#isThisTrue}}
 	isThisTrue is valid (not false nor empty list), showing this!
 	{{/isThisTrue}}
-	
+
 JSON values
 ===========
 
