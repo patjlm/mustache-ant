@@ -2,9 +2,7 @@ package com.github.patjlm.ant.mustache;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileReader;
 import java.io.IOException;
-import java.io.Reader;
 import java.util.Properties;
 
 import org.apache.tools.ant.BuildException;
@@ -13,12 +11,11 @@ import org.apache.tools.ant.filters.TokenFilter.ChainableReaderFilter;
 
 import com.samskivert.mustache.Mustache;
 import com.samskivert.mustache.Mustache.Compiler;
-import com.samskivert.mustache.Mustache.TemplateLoader;
 import com.samskivert.mustache.Template;
 
 /**
- * Provides <a href="http://mustache.github.com/">Mustache</a> templating
- * services for Ant.
+ * Provides <a href="http://mustache.github.com/">Mustache</a> templating services
+ * for Ant.
  *
  * <p>
  * See README.md for the basic usage within an Ant build script.
@@ -93,18 +90,24 @@ public class MustacheFilter extends ChainableReaderFilter {
 	private boolean strictSections = false;
 
 	/**
+	 * If this value is true, empty string will be treated as a false value, as
+	 * in JavaScript mustache implementation. Default is false.
+	 */
+	private boolean emptyStringIsFalse = false;
+
+	/**
 	 * Whether HTML output should be escaped. Default is false. See
 	 * {@link com.samskivert.mustache.Mustache.Compiler#escapeHTML}.
 	 */
 	private boolean escapeHTML = false;
-	
+
 	/**
 	 * Path in which referenced partial templates can searched for
 	 * {@link com.samskivert.mustache.Mustache.Compiler#withLoader}.
 	 * {@link com.samskivert.mustache.Mustache.TemplateLoader}.
 	 */
 	private PartialPath partialPath = null;
-	
+
 	public void setProjectProperties(Boolean projectProperties) {
 		this.projectProperties = projectProperties;
 	}
@@ -141,6 +144,10 @@ public class MustacheFilter extends ChainableReaderFilter {
 		this.strictSections = strictSections;
 	}
 
+	public void setEmptyStringIsFalse(boolean emptyStringIsFalse) {
+		this.emptyStringIsFalse = emptyStringIsFalse;
+	}
+
 	public void setEscapeHTML(boolean escapeHTML) {
 		this.escapeHTML = escapeHTML;
 	}
@@ -161,11 +168,11 @@ public class MustacheFilter extends ChainableReaderFilter {
 	 * The main method to implement the filter. Compiles the input text and
 	 * returns the output according to the defined data model
 	 */
+	@Override
 	public String filter(String text) {
-		getProject().log("Mustache Data: " + getData().toString(),
-				Project.MSG_DEBUG);
+		getProject().log("Mustache Data: " + getData().toString(), Project.MSG_DEBUG);
 		Compiler compiler = Mustache.compiler().defaultValue(defaultValue);
-		compiler = compiler.strictSections(strictSections).escapeHTML(escapeHTML);
+		compiler = compiler.strictSections(strictSections).emptyStringIsFalse(emptyStringIsFalse).escapeHTML(escapeHTML);
 		if (partialPath != null) {
 			compiler = compiler.withLoader(partialPath.getLoader());
 		}
@@ -178,7 +185,7 @@ public class MustacheFilter extends ChainableReaderFilter {
 	/**
 	 * gets the data model, building it from project properties and/or data file
 	 * if not already done
-	 * 
+	 *
 	 * @return the data model Map
 	 */
 	private MustacheData getData() {

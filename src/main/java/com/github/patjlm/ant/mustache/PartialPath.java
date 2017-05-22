@@ -22,12 +22,13 @@ public class PartialPath extends Path {
 	public PartialPath(Project project, String path) {
 		super(project, path);
 	}
-	
+
 	public Mustache.TemplateLoader getLoader() {
 		return new Mustache.TemplateLoader() {
-		    public Reader getTemplate (String name) {
-		    	return findPartial(name);
-		    }
+			@Override
+			public Reader getTemplate(String name) {
+				return findPartial(name);
+			}
 		};
 	}
 
@@ -38,15 +39,15 @@ public class PartialPath extends Path {
 			if (resource.isDirectory()) {
 				File partial = new File(((FileResource) resource).getFile(), name);
 				if (partial.exists()) {
-			    	try {
-			    		return new FileReader(partial);
-			    	} catch (Exception e) {
-			    		throw new BuildException(e);
-			    	}
+					try {
+						return new FileReader(partial);
+					} catch (Exception e) {
+						throw new BuildException(e);
+					}
 				}
 			}
 		}
-		throw new BuildException("Partial templaate " + name + " not found in path: " + toString());
+		throw new BuildException("Partial template " + name + " not found in path: " + toString());
 	}
 
 }
