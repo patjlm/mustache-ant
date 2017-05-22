@@ -69,6 +69,15 @@ public class MustacheFilter extends ChainableReaderFilter {
 	// other example of regex: (.+?)\[(\d+)\]\.(.+)
 
 	/**
+	 * the regular expression pattern used to parse property names having a JSON
+	 * value. The first group represents the property names without the Json
+	 * qualifier (actually used as real property name in the data model). The
+	 * second group represents the Json qualifier.
+	 */
+	private String jsonValueRegex = "^(.+)(@JSON)$";
+	// other example of regex: ^(.+)(!JSON)$
+
+	/**
 	 * A file name from which data model properties should be loaded from.
 	 * Disabled by default.
 	 */
@@ -156,6 +165,10 @@ public class MustacheFilter extends ChainableReaderFilter {
 		this.listRegex = listRegex;
 	}
 
+	public void setJsonValueRegex(String jsonValueRegex) {
+		this.jsonValueRegex = jsonValueRegex;
+	}
+
 	public void setPartialPath(PartialPath partialPath) {
 		this.partialPath = partialPath;
 	}
@@ -190,7 +203,7 @@ public class MustacheFilter extends ChainableReaderFilter {
 	 */
 	private MustacheData getData() {
 		if (_data == null) {
-			_data = new MustacheData(getProject(), booleanRegex, supportLists, listIdName, listRegex);
+			_data = new MustacheData(getProject(), booleanRegex, supportLists, listIdName, listRegex, jsonValueRegex);
 			addProjectProperties();
 			addSrcFile();
 		}

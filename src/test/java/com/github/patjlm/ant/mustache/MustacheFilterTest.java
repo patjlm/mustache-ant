@@ -28,37 +28,29 @@ public class MustacheFilterTest {
 
 	@Test
 	public void testPrefixRemoved() {
-		test(getFilter("myprefix.", true), "{{foo}}", "bar",
-				context("myprefix.foo", "bar", "foo", "IGNORED"));
+		test(getFilter("myprefix.", true), "{{foo}}", "bar", context("myprefix.foo", "bar", "foo", "IGNORED"));
 	}
 
 	@Test
 	public void testBooleanTrue() {
-		test(new MustacheFilter(),
-				"{{#foo?}}foo? is True{{/foo?}}{{^foo?}}foo? is False{{/foo?}}",
-				"foo? is True", context("foo?", "true"));
+		test(new MustacheFilter(), "{{#foo?}}foo? is True{{/foo?}}{{^foo?}}foo? is False{{/foo?}}", "foo? is True", context("foo?", "true"));
 	}
 
 	@Test
 	public void testBooleanFalse() {
-		test(new MustacheFilter(),
-				"{{#foo?}}foo? is True{{/foo?}}{{^foo?}}foo? is False{{/foo?}}",
-				"foo? is False", context("foo?", "false"));
+		test(new MustacheFilter(), "{{#foo?}}foo? is True{{/foo?}}{{^foo?}}foo? is False{{/foo?}}", "foo? is False", context("foo?", "false"));
 	}
 
 	@Test
 	public void testBooleanAny() {
-		test(new MustacheFilter(),
-				"{{#foo?}}foo? is {{foo?}}{{/foo?}}{{^foo?}}foo? is False{{/foo?}}",
-				"foo? is MyValue", context("foo?", "MyValue"));
+		test(new MustacheFilter(), "{{#foo?}}foo? is {{foo?}}{{/foo?}}{{^foo?}}foo? is False{{/foo?}}", "foo? is MyValue", context("foo?", "MyValue"));
 	}
 
 	@Test
 	public void testBooleanPattern() {
 		MustacheFilter m = new MustacheFilter();
 		m.setBooleanRegex("^is.+?$");
-		test(m, "{{#isFoo?}}isFoo? is True{{/isFoo?}}{{^isFoo?}}isFoo? is False{{/isFoo?}}",
-			"isFoo? is False", context("isFoo?", "false"));
+		test(m, "{{#isFoo?}}isFoo? is True{{/isFoo?}}{{^isFoo?}}isFoo? is False{{/isFoo?}}", "isFoo? is False", context("isFoo?", "false"));
 	}
 
 	@Test
@@ -108,21 +100,77 @@ public class MustacheFilterTest {
 	@Test
 	public void testList() {
 		test(new MustacheFilter(),
-				"{{#mylist}}{{__id__}}: {{p1}}-{{p2}}\n{{/mylist}}",
-				"1: 1.1-1.2\n2: 2.1-2.2\n",
-				context("mylist.1.p1", "1.1", "mylist.1.p2", "1.2",
-						"mylist.2.p1", "2.1", "mylist.2.p2", "2.2"));
+		     "{{#mylist}}{{__id__}}: {{p1}}-{{p2}}\n{{/mylist}}",
+		     "1: 1.1-1.2\n2: 2.1-2.2\n",
+		     context("mylist.1.p1", "1.1", "mylist.1.p2", "1.2", "mylist.2.p1", "2.1", "mylist.2.p2", "2.2"));
+	}
+
+	@Test
+	public void testListUsingAlphanumericId() {
+		MustacheFilter m = new MustacheFilter();
+		m.setListRegex("(.+?)\\[([\\w\\.]+)\\]\\.(.+)");
+		test(m,
+		     "{{#mylist}}{{__id__}}: {{p1}}-{{p2}}\n{{/mylist}}",
+		     "a.t: a.1-a.2\nb.u: b.1-b.2\n",
+		     context("mylist[a.t].p1", "a.1", "mylist[a.t].p2", "a.2", "mylist[b.u].p1", "b.1", "mylist[b.u].p2", "b.2"));
+	}
+
+	@Test
+	public void testJsonValue() {
+		test(new MustacheFilter(),
+		     "{{#myproperty}}myproperty exists, p1={{p1}}, p2={{p2}}{{/myproperty}}",
+		     "myproperty exists, p1=a.1, p2=a.2",
+		     context("myproperty@JSON", "{\"p1\" : \"a.1\", \"p2\" : \"a.2\" }"));
+	}
+
+	@Test
+	public void testListAndJsonValue() {
+		test(new MustacheFilter(),
+		     "mylist = {{mylist}}\n" + "{{#mylist}}\n" + "{{__id__}}.prop1 = {{prop1}}\n" + "{{__id__}}.prop2 = {{prop2}}\n" + "{{/mylist}}",
+		     "mylist = [{prop2=value-1-2, prop1=value-1-1, value={\"prop1\" : \"value-1-1\", \"prop2\" : \"value-1-2\" }, __id__=01}, " +
+		                     "{prop2=value-2-2, prop1=value-2-1, value={\"prop1\" : \"value-2-1\", \"prop2\" : \"value-2-2\" }, __id__=02}]\n" + "01.prop1 = value-1-1\n" +
+		                     "01.prop2 = value-1-2\n" + "02.prop1 = value-2-1\n" + "02.prop2 = value-2-2\n",
+		     context("mylist.01.value@JSON",
+		             "{\"prop1\" : \"value-1-1\", \"prop2\" : \"value-1-2\" }",
+		             "mylist.02.value@JSON",
+		             "{\"prop1\" : \"value-2-1\", \"prop2\" : \"value-2-2\" }"));
+	}
+
+	@Test
+	public void testListUsingAlphanumericIdAndJsonValue() {
+		MustacheFilter m = new MustacheFilter();
+		m.setListRegex("(.+?)\\[(\\w+)\\]\\.(.+)");
+		test(m, "p1={{p1}}\np2={{p2}}\n{{#mylist}}{{__id__}}: {{p1}}-{{p2}}\n{{/mylist}}", "p1=default.p1\np2=default.p2\na1: a.1-a.2\nb1: b.1-b.2\n", context("p1",
+		                                                                                                                                                       "default.p1",
+		                                                                                                                                                       "p2",
+		                                                                                                                                                       "default.p2",
+		                                                                                                                                                       "mylist[a1].value@JSON",
+		                                                                                                                                                       "{\"p1\":\"a.1\", \"p2\":\"a.2\"}",
+		                                                                                                                                                       "mylist[b1].value@JSON",
+		                                                                                                                                                       "{\"p1\":\"b.1\", \"p2\":\"b.2\"}"));
 	}
 
 	@Test
 	public void testImbricatedList() {
 		test(new MustacheFilter(),
-				"{{#mylist1}}{{#mylist2}}{{p1}}-{{p2}}\n{{/mylist2}}{{/mylist1}}",
-				"1.1.1-1.1.2\n1.2.1-1.2.2\n2.1.1-2.1.2\n2.2.1-2.2.2\n",
-				context("mylist1.1.mylist2.1.p1", "1.1.1", "mylist1.1.mylist2.1.p2", "1.1.2",
-						"mylist1.1.mylist2.2.p1", "1.2.1", "mylist1.1.mylist2.2.p2", "1.2.2",
-						"mylist1.2.mylist2.1.p1", "2.1.1", "mylist1.2.mylist2.1.p2", "2.1.2",
-						"mylist1.2.mylist2.2.p1", "2.2.1", "mylist1.2.mylist2.2.p2", "2.2.2"));
+		     "{{#mylist1}}{{#mylist2}}{{__id__}}: {{p1}}-{{p2}}\n{{/mylist2}}{{/mylist1}}",
+		     "1: 1.1.1-1.1.2\n2: 1.2.1-1.2.2\n1: 2.1.1-2.1.2\n2: 2.2.1-2.2.2\n",
+		     context("mylist1.1.mylist2.1.p1",
+		             "1.1.1",
+		             "mylist1.1.mylist2.1.p2",
+		             "1.1.2",
+		             "mylist1.1.mylist2.2.p1",
+		             "1.2.1",
+		             "mylist1.1.mylist2.2.p2",
+		             "1.2.2",
+		             "mylist1.2.mylist2.1.p1",
+		             "2.1.1",
+		             "mylist1.2.mylist2.1.p2",
+		             "2.1.2",
+		             "mylist1.2.mylist2.2.p1",
+		             "2.2.1",
+		             "mylist1.2.mylist2.2.p2",
+		             "2.2.2"));
 	}
 
 	protected MustacheFilter getFilter(String prefix, Boolean removePrefix) {
@@ -136,11 +184,9 @@ public class MustacheFilterTest {
 		return m;
 	}
 
-	protected void test(MustacheFilter mustache, String template,
-			String expected, Map<String, String> context) {
+	protected void test(MustacheFilter mustache, String template, String expected, Map<String, String> context) {
 		Project project = new Project();
-		project.setProperty("ant.regexp.regexpimpl",
-				"org.apache.tools.ant.util.regexp.Jdk14RegexpRegexp");
+		project.setProperty("ant.regexp.regexpimpl", "org.apache.tools.ant.util.regexp.Jdk14RegexpRegexp");
 		if (context != null) {
 			for (Entry<String, String> entry : context.entrySet()) {
 				project.setProperty(entry.getKey(), entry.getValue());

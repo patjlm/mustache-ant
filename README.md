@@ -169,43 +169,86 @@ Boolean values
 As the string "false" is not usually considered as actually False, a special treatment is needed for booleans.
 Properties ending by a question mark are treated as Booleans by default, specifically to be used as tests inside the templates.
 
-	mytrue? = true
-	myfalse? = false
-	
+  mytrue? = true
+  myfalse? = false
+  
 In the template:
 
-	mytrue? = {{mytrue?}}
-	{{#mytrue?}}
-	mytrue is valid (not false nor empty list), showing this!
-	{{/mytrue?}}
-	{{^mytrue?}}
-	mytrue is NOT valid (false or empty list), showing that!
-	{{/mytrue?}}
-	
-	myfalse? = {{myfalse?}}
-	{{#myfalse?}}
-	myfalse is valid (not false nor empty list), showing this!
-	{{/myfalse?}}
-	{{^myfalse?}}
-	myfalse is NOT valid (false or empty list), showing that!
-	{{/myfalse?}}
+  mytrue? = {{mytrue?}}
+  {{#mytrue?}}
+  mytrue is valid (not false nor empty list), showing this!
+  {{/mytrue?}}
+  {{^mytrue?}}
+  mytrue is NOT valid (false or empty list), showing that!
+  {{/mytrue?}}
+  
+  myfalse? = {{myfalse?}}
+  {{#myfalse?}}
+  myfalse is valid (not false nor empty list), showing this!
+  {{/myfalse?}}
+  {{^myfalse?}}
+  myfalse is NOT valid (false or empty list), showing that!
+  {{/myfalse?}}
 
 Which outputs:
 
-	mytrue? = true
-	mytrue? is valid (not false nor empty list), showing this!
-	myfalse? = false
-	myfalse? is NOT valid (false or empty list), showing that!
+  mytrue? = true
+  mytrue? is valid (not false nor empty list), showing this!
+  myfalse? = false
+  myfalse? is NOT valid (false or empty list), showing that!
 
 
 You can override the default boolean key pattern by using the booleanRegex option.
 For example, if you want to prefix all your boolean properties with "is", you could use this kind of pattern:
 
-	booleanRegex="^is.+"
+  booleanRegex="^is.+"
 
 You can then use it in your template:
 
-	{{#isThisTrue}}
-	isThisTrue is valid (not false nor empty list), showing this!
-	{{/isThisTrue}}
-	
+  {{#isThisTrue}}
+  isThisTrue is valid (not false nor empty list), showing this!
+  {{/isThisTrue}}
+  
+JSON values
+===========
+
+The JSON values are supported since V1.1.0.
+
+Consider the following properties:
+
+  myproperty@JSON = {"p1" : "a.1", "p2" : "a.2" }
+
+And this template
+
+  {{#myproperty}}myproperty exists, p1={{p1}}, p2={{p2}}{{/myproperty}}
+
+Which outputs:
+
+  myproperty exists, p1=a.1, p2=a.2
+
+You can also use a JSON structure inside a list. The advantage is to reduce the number of properties.
+Consider the following properties (simplification of example using list above):
+
+  mylist.01@JSON = { "prop1" : "value-1-1", "prop2" : "value-1-2" }
+  mylist.02@JSON = { "prop1" : "value-2-1", "prop2" : "value-2-2" }
+
+The same template is the same as above:
+
+  mylist = {{mylist}}
+  {{#mylist}}
+  {{__id__}}.prop1 = {{prop1}}
+  {{__id__}}.prop2 = {{prop2}}
+  {{/mylist}}
+
+Which outputs:
+
+  mylist = [{prop2=value-1-2, prop1=value-1-1, value={"prop1" : "value-1-1", "prop2" : "value-1-2" }, __id__=01}, {prop2=value-2-2, prop1=value-2-1, value={"prop1" : "value-2-1", "prop2" : "value-2-2" }, __id__=02}]
+  01.prop1 = value-1-1
+  01.prop2 = value-1-2
+  02.prop1 = value-2-1
+  02.prop2 = value-2-2
+
+You can override the default JSON key pattern by using the jsonValueRegex option.
+For example, if you want to suffix all your JSON properties with "!JSON", you could use this kind of pattern:
+
+  booleanRegex="^(.+)(!JSON)$"
