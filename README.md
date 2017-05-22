@@ -152,17 +152,17 @@ Consider the following properties:
 
 And this template
 
-  {{#myproperty}}myproperty exists (value={{myproperty}}){{/myproperty}}
-  {{^myproperty}}myproperty does not exist{{/myproperty}}
+  {{#myproperty}}myproperty exists and should not be empty (value={{myproperty}}){{/myproperty}}
+  {{^myproperty}}myproperty does not exist or is empty{{/myproperty}}
  
 In case emptyStringIsFalse option is set to false (default value), the output will be:
 
-  myproperty exists (value=)
+  myproperty exists and should not be empty (value=)
 
 In case emptyStringIsFalse option is set to true, the output will be:
 
-  myproperty does not exist
-
+  myproperty does not exist or is empty
+  
 Boolean values
 ==============
 

@@ -63,9 +63,9 @@ public class MustacheFilterTest {
 
 	@Test
 	public void testEmptyString() {
-		String template = "{{#myproperty}}myproperty exists (value={{myproperty}}){{/myproperty}}\n{{^myproperty}}myproperty does not exist{{/myproperty}}";
-		testEmptyString(false, false, template, "\nmyproperty does not exist", context());
-		testEmptyString(false, true, template, "\nmyproperty does not exist", context());
+		String template = "{{#myproperty}}myproperty exists and should not be empty (value={{myproperty}}){{/myproperty}}\n{{^myproperty}}myproperty does not exist or is empty{{/myproperty}}";
+		testEmptyString(false, false, template, "\nmyproperty does not exist or is empty", context());
+		testEmptyString(false, true, template, "\nmyproperty does not exist or is empty", context());
 
 		try {
 			testEmptyString(true, false, template, null, context());
@@ -80,22 +80,22 @@ public class MustacheFilterTest {
 
 		// The difference can be seen on this test case
 		// if the property value is empty, it is considered as not set
-		testEmptyString(false, false, template, "myproperty exists (value=)\n", context("myproperty", ""));
-		testEmptyString(false, true, template, "\nmyproperty does not exist", context("myproperty", ""));
-		testEmptyString(true, false, template, "myproperty exists (value=)\n", context("myproperty", ""));
-		testEmptyString(true, true, template, "\nmyproperty does not exist", context("myproperty", ""));
+		testEmptyString(false, false, template, "myproperty exists and should not be empty (value=)\n", context("myproperty", ""));
+		testEmptyString(false, true, template, "\nmyproperty does not exist or is empty", context("myproperty", ""));
+		testEmptyString(true, false, template, "myproperty exists and should not be empty (value=)\n", context("myproperty", ""));
+		testEmptyString(true, true, template, "\nmyproperty does not exist or is empty", context("myproperty", ""));
 
 		// This case should not happen with property files since values are
 		// trimmed
-		testEmptyString(false, false, template, "myproperty exists (value= )\n", context("myproperty", " "));
-		testEmptyString(false, true, template, "myproperty exists (value= )\n", context("myproperty", " "));
-		testEmptyString(true, false, template, "myproperty exists (value= )\n", context("myproperty", " "));
-		testEmptyString(true, true, template, "myproperty exists (value= )\n", context("myproperty", " "));
+		testEmptyString(false, false, template, "myproperty exists and should not be empty (value= )\n", context("myproperty", " "));
+		testEmptyString(false, true, template, "myproperty exists and should not be empty (value= )\n", context("myproperty", " "));
+		testEmptyString(true, false, template, "myproperty exists and should not be empty (value= )\n", context("myproperty", " "));
+		testEmptyString(true, true, template, "myproperty exists and should not be empty (value= )\n", context("myproperty", " "));
 
-		testEmptyString(false, false, template, "myproperty exists (value=1)\n", context("myproperty", "1"));
-		testEmptyString(false, true, template, "myproperty exists (value=1)\n", context("myproperty", "1"));
-		testEmptyString(true, false, template, "myproperty exists (value=1)\n", context("myproperty", "1"));
-		testEmptyString(true, true, template, "myproperty exists (value=1)\n", context("myproperty", "1"));
+		testEmptyString(false, false, template, "myproperty exists and should not be empty (value=1)\n", context("myproperty", "1"));
+		testEmptyString(false, true, template, "myproperty exists and should not be empty (value=1)\n", context("myproperty", "1"));
+		testEmptyString(true, false, template, "myproperty exists and should not be empty (value=1)\n", context("myproperty", "1"));
+		testEmptyString(true, true, template, "myproperty exists and should not be empty (value=1)\n", context("myproperty", "1"));
 	}
 
 	private void testEmptyString(boolean strictSections, boolean emptyStringIsFalse, String template, String expected, Map<String, String> context) {
