@@ -51,16 +51,14 @@ public class MustacheData extends HashMap<String, Object> {
 
 	private Project project;
 
-	public MustacheData(Project project, String booleanRegexPattern, Boolean supportLists, String listIdName, String listRegexPattern, String jsonValueRegexPattern) {
-		this(project,
-		     asAntRegexp(booleanRegexPattern, project),
-		     supportLists,
-		     listIdName,
-		     asAntRegexp(listRegexPattern, project),
-		     asAntRegexp(jsonValueRegexPattern, project));
+	public MustacheData(Project project, String booleanRegexPattern, Boolean supportLists, String listIdName,
+			String listRegexPattern, String jsonValueRegexPattern) {
+		this(project, asAntRegexp(booleanRegexPattern, project), supportLists, listIdName,
+				asAntRegexp(listRegexPattern, project), asAntRegexp(jsonValueRegexPattern, project));
 	}
 
-	public MustacheData(Project project, Regexp booleanRegexp, Boolean supportLists, String listIdName, Regexp listRegexp, Regexp jsonValueRegex) {
+	public MustacheData(Project project, Regexp booleanRegexp, Boolean supportLists, String listIdName,
+			Regexp listRegexp, Regexp jsonValueRegex) {
 		super();
 		this.project = project;
 		this.booleanRegexp = booleanRegexp;
@@ -88,13 +86,13 @@ public class MustacheData extends HashMap<String, Object> {
 	 * Adds a set of properties to the datamodel
 	 *
 	 * @param props
-	 *                the properties to add
+	 *            the properties to add
 	 * @param prefix
-	 *                the prefix that properties should have in order to be
-	 *                considered. If null, all properties will be considered.
+	 *            the prefix that properties should have in order to be
+	 *            considered. If null, all properties will be considered.
 	 * @param removePrefix
-	 *                whether the prefix should be removed in the data model key
-	 *                name
+	 *            whether the prefix should be removed in the data model key
+	 *            name
 	 */
 	public void addProperties(Hashtable<?, ?> props, String prefix, Boolean removePrefix) {
 		Iterator<?> it = props.keySet().iterator();
@@ -117,15 +115,15 @@ public class MustacheData extends HashMap<String, Object> {
 	 * child elements to the data model
 	 *
 	 * @param data
-	 *                the map to insert or update the list into
+	 *            the map to insert or update the list into
 	 * @param rootKey
-	 *                the list name
+	 *            the list name
 	 * @param id
-	 *                the id of the element being inserted in the list
+	 *            the id of the element being inserted in the list
 	 * @param subKey
-	 *                the key of the value to put in the list element
+	 *            the key of the value to put in the list element
 	 * @param value
-	 *                the value to put in the list element
+	 *            the value to put in the list element
 	 */
 	private void addList(String rootKey, String id, String subKey, Object value) {
 		List<MustacheData> listContext = (List<MustacheData>) get(rootKey);
@@ -174,8 +172,9 @@ public class MustacheData extends HashMap<String, Object> {
 	private void addJsonMapValue(String parameterName, Object jsonValue) {
 		ObjectMapper objectMapper = new ObjectMapper();
 		try {
-			Map<String, String> valueMap = objectMapper.readValue(jsonValue.toString(), new TypeReference<HashMap<String, String>>() {
-			});
+			Map<String, String> valueMap = objectMapper.readValue(jsonValue.toString(),
+					new TypeReference<HashMap<String, String>>() {
+					});
 
 			for (Map.Entry<String, String> subKeyValue : valueMap.entrySet()) {
 				put(subKeyValue.getKey(), subKeyValue.getValue());
@@ -200,10 +199,10 @@ public class MustacheData extends HashMap<String, Object> {
 	 * computes the value into a Boolean if needed
 	 *
 	 * @param key
-	 *                the key to evaluate, which should match the boolean
-	 *                pattern in order to be treated as a boolean
+	 *            the key to evaluate, which should match the boolean pattern in
+	 *            order to be treated as a boolean
 	 * @param value
-	 *                the value to translate into a boolean if needed
+	 *            the value to translate into a boolean if needed
 	 * @return either a corresponding boolean or the value itself
 	 */
 	private Object computeValue(String key, Object value) {
@@ -240,7 +239,7 @@ public class MustacheData extends HashMap<String, Object> {
 		 * constructor: parses the key into root key, id and sub-key
 		 *
 		 * @param key
-		 *                the key to parse
+		 *            the key to parse
 		 */
 		public ListKeyParser(String key) {
 			Vector<?> groups = listRegexp.getGroups(key);

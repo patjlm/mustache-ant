@@ -14,8 +14,8 @@ import com.samskivert.mustache.Mustache.Compiler;
 import com.samskivert.mustache.Template;
 
 /**
- * Provides <a href="http://mustache.github.com/">Mustache</a> templating services
- * for Ant.
+ * Provides <a href="http://mustache.github.com/">Mustache</a> templating
+ * services for Ant.
  *
  * <p>
  * See README.md for the basic usage within an Ant build script.
@@ -185,7 +185,8 @@ public class MustacheFilter extends ChainableReaderFilter {
 	public String filter(String text) {
 		getProject().log("Mustache Data: " + getData().toString(), Project.MSG_DEBUG);
 		Compiler compiler = Mustache.compiler().defaultValue(defaultValue);
-		compiler = compiler.strictSections(strictSections).emptyStringIsFalse(emptyStringIsFalse).escapeHTML(escapeHTML);
+		compiler = compiler.strictSections(strictSections).emptyStringIsFalse(emptyStringIsFalse)
+				.escapeHTML(escapeHTML);
 		if (partialPath != null) {
 			compiler = compiler.withLoader(partialPath.getLoader());
 		}
