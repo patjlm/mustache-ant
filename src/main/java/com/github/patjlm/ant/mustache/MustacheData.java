@@ -103,7 +103,6 @@ public class MustacheData extends HashMap<String, Object> {
 				if (removePrefix && prefix != null) {
 					key = key.substring(prefix.length());
 				}
-
 				put(key, value);
 			}
 		}
