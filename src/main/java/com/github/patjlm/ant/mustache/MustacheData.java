@@ -174,10 +174,7 @@ public class MustacheData extends HashMap<String, Object> {
 			Map<String, String> valueMap = objectMapper.readValue(jsonValue.toString(),
 					new TypeReference<HashMap<String, String>>() {
 					});
-
-			for (Map.Entry<String, String> subKeyValue : valueMap.entrySet()) {
-				put(subKeyValue.getKey(), subKeyValue.getValue());
-			}
+			putAll(valueMap);
 		} catch (IOException e) {
 			throw new RuntimeException("Unable to parse Json value: " + jsonValue + ". Cause: " + e.getMessage(), e);
 		}
