@@ -14,8 +14,8 @@ import com.samskivert.mustache.Mustache.Compiler;
 import com.samskivert.mustache.Template;
 
 /**
- * Provides <a href="http://mustache.github.com/">Mustache</a> templating services
- * for Ant.
+ * Provides <a href="http://mustache.github.com/">Mustache</a> templating
+ * services for Ant.
  *
  * <p>
  * See README.md for the basic usage within an Ant build script.
@@ -67,6 +67,15 @@ public class MustacheFilter extends ChainableReaderFilter {
 	 */
 	private String listRegex = "(.+?)\\.(\\d+)\\.(.+)";
 	// other example of regex: (.+?)\[(\d+)\]\.(.+)
+
+	/**
+	 * the regular expression pattern used to parse property names having a JSON
+	 * value. The first group represents the property names without the Json
+	 * qualifier (actually used as real property name in the data model). The
+	 * second group represents the Json qualifier.
+	 */
+	private String jsonValueRegex = "^(.+)(@JSON)$";
+	// other example of regex: ^(.+)(!JSON)$
 
 	/**
 	 * A file name from which data model properties should be loaded from.
@@ -156,6 +165,10 @@ public class MustacheFilter extends ChainableReaderFilter {
 		this.listRegex = listRegex;
 	}
 
+	public void setJsonValueRegex(String jsonValueRegex) {
+		this.jsonValueRegex = jsonValueRegex;
+	}
+
 	public void setPartialPath(PartialPath partialPath) {
 		this.partialPath = partialPath;
 	}
@@ -172,7 +185,8 @@ public class MustacheFilter extends ChainableReaderFilter {
 	public String filter(String text) {
 		getProject().log("Mustache Data: " + getData().toString(), Project.MSG_DEBUG);
 		Compiler compiler = Mustache.compiler().defaultValue(defaultValue);
-		compiler = compiler.strictSections(strictSections).emptyStringIsFalse(emptyStringIsFalse).escapeHTML(escapeHTML);
+		compiler = compiler.strictSections(strictSections).emptyStringIsFalse(emptyStringIsFalse)
+				.escapeHTML(escapeHTML);
 		if (partialPath != null) {
 			compiler = compiler.withLoader(partialPath.getLoader());
 		}
@@ -190,7 +204,7 @@ public class MustacheFilter extends ChainableReaderFilter {
 	 */
 	private MustacheData getData() {
 		if (_data == null) {
-			_data = new MustacheData(getProject(), booleanRegex, supportLists, listIdName, listRegex);
+			_data = new MustacheData(getProject(), booleanRegex, supportLists, listIdName, listRegex, jsonValueRegex);
 			addProjectProperties();
 			addSrcFile();
 		}

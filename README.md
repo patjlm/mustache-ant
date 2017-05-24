@@ -94,7 +94,7 @@ An example may help here. Consider the following properties:
 	mylist.01.prop2 = value-1-2
 	mylist.02.prop1 = value-2-1
 	mylist.02.prop2 = value-2-2
-	
+
 And this template
 
 	mylist = {{mylist}}
@@ -102,7 +102,7 @@ And this template
 	{{__id__}}.prop1 = {{prop1}}
 	{{__id__}}.prop2 = {{prop2}}
 	{{/mylist}}
-	
+
 The output would be:
 
 	mylist = [{prop2=value-1-2, prop1=value-1-1, __id__=01}, {prop2=value-2-2, prop1=value-2-1, __id__=02}]
@@ -121,7 +121,7 @@ Sub-lists are supported as well. For example, you could have the following prope
 	mylist1.2.mylist2.1.p2=2.1.2
 	mylist1.2.mylist2.2.p1=2.2.1
 	mylist1.2.mylist2.2.p2=2.2.2
-	
+
 and use them in the template
 
 	{{#mylist1}}
@@ -129,7 +129,7 @@ and use them in the template
 			{{p1}}-{{p2}}
 		{{/mylist2}}
 	{{/mylist1}}
-   
+	 
 Note that you can override the default pattern. For example, you may prefer to use a notation with square brackets:
 
 	listRegex="(.+?)\[(\d+)\]\.(.+)"
@@ -140,7 +140,7 @@ With such regex, the previous list would be written
 	mylist[01].prop2 = value 01-2
 	mylist[02].prop1 = value 02-1
 	mylist[02].prop2 = value 02-2
-	
+
 Empty value
 ===========
 
@@ -148,20 +148,20 @@ The empty value is supported since V1.1.0 by setting the emptyStringIsFalse opti
 
 Consider the following properties:
 
-  myproperty.enable = 
+	myproperty.enable = 
 
 And this template
 
-  {{#myproperty}}myproperty exists (value={{myproperty}}){{/myproperty}}
-  {{^myproperty}}myproperty does not exist{{/myproperty}}
+	{{#myproperty}}myproperty exists and should not be empty (value={{myproperty}}){{/myproperty}}
+	{{^myproperty}}myproperty does not exist or is empty{{/myproperty}}
  
 In case emptyStringIsFalse option is set to false (default value), the output will be:
 
-  myproperty exists (value=)
+	myproperty exists and should not be empty (value=)
 
 In case emptyStringIsFalse option is set to true, the output will be:
 
-  myproperty does not exist
+	myproperty does not exist or is empty
 
 Boolean values
 ==============
@@ -171,7 +171,7 @@ Properties ending by a question mark are treated as Booleans by default, specifi
 
 	mytrue? = true
 	myfalse? = false
-	
+
 In the template:
 
 	mytrue? = {{mytrue?}}
@@ -181,7 +181,7 @@ In the template:
 	{{^mytrue?}}
 	mytrue is NOT valid (false or empty list), showing that!
 	{{/mytrue?}}
-	
+
 	myfalse? = {{myfalse?}}
 	{{#myfalse?}}
 	myfalse is valid (not false nor empty list), showing this!
@@ -208,4 +208,47 @@ You can then use it in your template:
 	{{#isThisTrue}}
 	isThisTrue is valid (not false nor empty list), showing this!
 	{{/isThisTrue}}
-	
+
+JSON values
+===========
+
+The JSON values are supported since V1.1.0.
+
+Consider the following properties:
+
+	myproperty@JSON = {"p1" : "a.1", "p2" : "a.2" }
+
+And this template
+
+	{{#myproperty}}myproperty exists, p1={{p1}}, p2={{p2}}{{/myproperty}}
+
+Which outputs:
+
+	myproperty exists, p1=a.1, p2=a.2
+
+You can also use a JSON structure inside a list. The advantage is to reduce the number of properties.
+Consider the following properties (simplification of example using list above):
+
+	mylist.01@JSON = { "prop1" : "value-1-1", "prop2" : "value-1-2" }
+	mylist.02@JSON = { "prop1" : "value-2-1", "prop2" : "value-2-2" }
+
+The same template is the same as above:
+
+	mylist = {{mylist}}
+	{{#mylist}}
+	{{__id__}}.prop1 = {{prop1}}
+	{{__id__}}.prop2 = {{prop2}}
+	{{/mylist}}
+
+Which outputs:
+
+	mylist = [{prop2=value-1-2, prop1=value-1-1, value={"prop1" : "value-1-1", "prop2" : "value-1-2" }, __id__=01}, {prop2=value-2-2, prop1=value-2-1, value={"prop1" : "value-2-1", "prop2" : "value-2-2" }, __id__=02}]
+	01.prop1 = value-1-1
+	01.prop2 = value-1-2
+	02.prop1 = value-2-1
+	02.prop2 = value-2-2
+
+You can override the default JSON key pattern by using the jsonValueRegex option.
+For example, if you want to suffix all your JSON properties with "!JSON", you could use this kind of pattern:
+
+	booleanRegex="^(.+)(!JSON)$"
