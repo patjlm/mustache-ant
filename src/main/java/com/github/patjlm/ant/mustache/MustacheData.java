@@ -273,6 +273,34 @@ public class MustacheData extends HashMap<String, Object> {
 	}
 
 	/**
+	 * Parses JSON value as Map and adds entries into the data model using the
+	 * specified key as prefix.
+	 *
+	 * Note: for the moment the implementation only supports simple map value:
+	 * <code>
+	 * {
+	   	"k1": "v1",
+	   	"k2": "v2",
+	   	"k3": "v3"
+	   }
+	   </code>
+	 *
+	 * @param parameterName
+	 * @param value
+	 */
+	private void addJsonMapValue(String parameterName, Object jsonValue) {
+		ObjectMapper objectMapper = new ObjectMapper();
+		try {
+			Map<String, String> valueMap = objectMapper.readValue(jsonValue.toString(),
+					new TypeReference<HashMap<String, String>>() {
+					});
+			putAll(valueMap);
+		} catch (IOException e) {
+			throw new RuntimeException("Unable to parse Json value: " + jsonValue + ". Cause: " + e.getMessage(), e);
+		}
+	}
+
+	/**
 	 * get an Ant regexp from the given standard regex pattern
 	 *
 	 * @return the ant regexp

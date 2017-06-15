@@ -248,7 +248,6 @@ Which outputs:
 	02.prop1 = value-2-1
 	02.prop2 = value-2-2
 
-
 You can also have more complex JSON structure. Let's consider the following properties:
 
 	mylist[01].value@JSON = { "msg" : "hello", "simple" : true, "ar" : "a1" }
