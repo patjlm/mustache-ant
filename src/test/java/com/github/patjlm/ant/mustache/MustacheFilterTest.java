@@ -151,7 +151,10 @@ public class MustacheFilterTest {
 		MustacheFilter m = new MustacheFilter();
 		m.setListRegex("(.+?)\\[([\\d\\.]+)\\]\\.(.+)");
 		test(m, "{{#mylist}}" + "{" + "\"key\"=\"{{__id__}}\", " + "\"msg\"=\"{{value.msg}}\", "
-				+ "\"simple\"=\"{{value.simple}}\", " + "\"ar\"=\"{{value.ar}}\"" + "}, " + "{{/mylist}}",
+				+ "\"simple\"=\"{{value.simple}}\", " + "\"ar\"=\"{{value.ar}}\"" + "}" +
+				// add a comma and a space only if it's not the last item in the
+				// list
+				"{{^-last}}, {{/-last}}" + "{{/mylist}}",
 
 				"{\"key\"=\"01\", \"msg\"=\"hello\", \"simple\"=\"true\", \"ar\"=\"a1\"}, "
 						+ "{\"key\"=\"02\", \"msg\"=\"world\", \"simple\"=\"20\", \"ar\"=\"[\"a1\"]\"}, "
@@ -160,7 +163,7 @@ public class MustacheFilterTest {
 						// Note: using complex JSON with sub-levels, the double
 						// quotes disappear around the internal keys (sub-simple
 						// and sub-ar)... to be checked how to fix this
-						+ "{\"key\"=\"04\", \"msg\"=\"recursive json\", \"simple\"=\"false\", \"ar\"=\"[{sub-simple=false, sub-ar=[\"a1\", \"a2\"]}, {sub-simple=true, sub-ar=[\"b1\", \"b2\"]}]\"}, ",
+						+ "{\"key\"=\"04\", \"msg\"=\"recursive json\", \"simple\"=\"false\", \"ar\"=\"[{sub-simple=false, sub-ar=[\"a1\", \"a2\"]}, {sub-simple=true, sub-ar=[\"b1\", \"b2\"]}]\"}",
 
 				context("mylist[01].value@JSON", "{\"msg\" : \"hello\",  \"simple\" : true, \"ar\" : \"a1\" }",
 						"mylist[02].value@JSON", "{\"msg\" : \"world\",  \"simple\" : 20, \"ar\" : [\"a1\"] }",

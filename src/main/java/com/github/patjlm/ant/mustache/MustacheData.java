@@ -225,7 +225,6 @@ public class MustacheData extends HashMap<String, Object> {
 					Map.Entry<String, JsonNode> field = fieldsIterator.next();
 					String subKey = field.getKey();
 					JsonNode value = field.getValue();
-					System.out.println("Object : Key: " + key + "\tSubKey: " + subKey + "\tValue:" + value);
 
 					// Recursively call this function
 					objectContext.put(subKey, value);
@@ -239,7 +238,6 @@ public class MustacheData extends HashMap<String, Object> {
 				while (elementsIterator.hasNext()) {
 					String subTempKey = String.valueOf(index++);
 					JsonNode value = elementsIterator.next();
-					System.out.println("Array  : Key: " + key + "\tValue:" + value);
 
 					if (value.isContainerNode()) {
 						// Create a temporary context to recursively compute the
