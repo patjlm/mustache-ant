@@ -69,6 +69,11 @@ public class MustacheFilter extends ChainableReaderFilter {
 	// other example of regex: (.+?)\[(\d+)\]\.(.+)
 
 	/**
+	 * Whether to support JSON parsing in property values
+	 */
+	private Boolean supportJson = true;
+
+	/**
 	 * the regular expression pattern used to parse property names having a JSON
 	 * value. The first group represents the property names without the Json
 	 * qualifier (actually used as real property name in the data model). The
@@ -165,6 +170,10 @@ public class MustacheFilter extends ChainableReaderFilter {
 		this.listRegex = listRegex;
 	}
 
+	public void setSupportJson(Boolean supportJson) {
+		this.supportJson = supportJson;
+	}
+
 	public void setJsonValueRegex(String jsonValueRegex) {
 		this.jsonValueRegex = jsonValueRegex;
 	}
@@ -204,7 +213,8 @@ public class MustacheFilter extends ChainableReaderFilter {
 	 */
 	private MustacheData getData() {
 		if (_data == null) {
-			_data = new MustacheData(getProject(), booleanRegex, supportLists, listIdName, listRegex, jsonValueRegex);
+			_data = new MustacheData(getProject(), booleanRegex, supportLists, listIdName, listRegex, supportJson,
+					jsonValueRegex);
 			addProjectProperties();
 			addSrcFile();
 		}

@@ -15,10 +15,12 @@ import org.apache.tools.ant.Project;
 import org.apache.tools.ant.types.RegularExpression;
 import org.apache.tools.ant.util.regexp.Regexp;
 
-import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class MustacheData extends HashMap<String, Object> {
+	private static final long serialVersionUID = -5968961809791605263L;
+
 	/**
 	 * Whether to support list parsing in property names
 	 */
@@ -44,6 +46,11 @@ public class MustacheData extends HashMap<String, Object> {
 	private Regexp booleanRegexp;
 
 	/**
+	 * Whether to support JSON parsing in property values
+	 */
+	private Boolean supportJson;
+
+	/**
 	 * the regular expression pattern used to parse property names having a JSON
 	 * value.
 	 */
@@ -52,19 +59,20 @@ public class MustacheData extends HashMap<String, Object> {
 	private Project project;
 
 	public MustacheData(Project project, String booleanRegexPattern, Boolean supportLists, String listIdName,
-			String listRegexPattern, String jsonValueRegexPattern) {
+			String listRegexPattern, Boolean supportJson, String jsonValueRegexPattern) {
 		this(project, asAntRegexp(booleanRegexPattern, project), supportLists, listIdName,
-				asAntRegexp(listRegexPattern, project), asAntRegexp(jsonValueRegexPattern, project));
+				asAntRegexp(listRegexPattern, project), supportJson, asAntRegexp(jsonValueRegexPattern, project));
 	}
 
 	public MustacheData(Project project, Regexp booleanRegexp, Boolean supportLists, String listIdName,
-			Regexp listRegexp, Regexp jsonValueRegex) {
+			Regexp listRegexp, Boolean supportJson, Regexp jsonValueRegex) {
 		super();
 		this.project = project;
 		this.booleanRegexp = booleanRegexp;
 		this.supportLists = supportLists;
 		this.listIdName = listIdName;
 		this.listRegexp = listRegexp;
+		this.supportJson = supportJson;
 		this.jsonValueRegex = jsonValueRegex;
 	}
 
@@ -72,14 +80,16 @@ public class MustacheData extends HashMap<String, Object> {
 	public Object put(String key, Object value) {
 		if (supportLists && listRegexp.matches(key)) {
 			ListKeyParser parser = new ListKeyParser(key);
-			addList(parser.rootKey, parser.id, parser.subKey, value);
-		} else if (jsonValueRegex.matches(key)) {
+			return addList(parser.rootKey, parser.id, parser.subKey, value);
+		} else if (supportJson && jsonValueRegex.matches(key)) {
 			Vector<?> groups = jsonValueRegex.getGroups(key);
 			key = (String) groups.get(1);
-			addJsonMapValue(key, value);
+			return addJsonNode(key, (String) value);
+		} else if (value instanceof JsonNode) {
+			return addJsonNode(key, (JsonNode) value);
+		} else {
+			return super.put(key, computeValue(key, value));
 		}
-
-		return super.put(key, computeValue(key, value));
 	}
 
 	/**
@@ -124,7 +134,8 @@ public class MustacheData extends HashMap<String, Object> {
 	 * @param value
 	 *            the value to put in the list element
 	 */
-	private void addList(String rootKey, String id, String subKey, Object value) {
+	private Object addList(String rootKey, String id, String subKey, Object value) {
+		@SuppressWarnings("unchecked")
 		List<MustacheData> listContext = (List<MustacheData>) get(rootKey);
 		if (listContext == null) {
 			listContext = new ArrayList<MustacheData>();
@@ -139,7 +150,8 @@ public class MustacheData extends HashMap<String, Object> {
 			}
 		}
 		if (foundData == null) {
-			foundData = new MustacheData(project, booleanRegexp, supportLists, listIdName, listRegexp, jsonValueRegex);
+			foundData = new MustacheData(project, booleanRegexp, supportLists, listIdName, listRegexp, supportJson,
+					jsonValueRegex);
 			foundData.put(listIdName, id);
 			listContext.add(foundData);
 			Collections.sort(listContext, new Comparator<MustacheData>() {
@@ -149,35 +161,117 @@ public class MustacheData extends HashMap<String, Object> {
 				}
 			});
 		}
-		foundData.put(subKey, value);
+		return foundData.put(subKey, value);
 	}
 
 	/**
-	 * Parses JSON value as Map and adds entries into the data model using the
-	 * specified key as prefix.
+	 * Parses JSON text value and add it into the data model using the specified
+	 * key as prefix.
 	 *
-	 * Note: for the moment the implementation only supports simple map value:
-	 * <code>
-	 * {
-	   	"k1": "v1",
-	   	"k2": "v2",
-	   	"k3": "v3"
-	   }
-	   </code>
-	 *
-	 * @param parameterName
-	 * @param value
+	 * @param key
+	 * @param jsonValue
+	 * @return the previous value
 	 */
-	private void addJsonMapValue(String parameterName, Object jsonValue) {
+	private Object addJsonNode(String key, String jsonValue) {
 		ObjectMapper objectMapper = new ObjectMapper();
 		try {
-			Map<String, String> valueMap = objectMapper.readValue(jsonValue.toString(),
-					new TypeReference<HashMap<String, String>>() {
-					});
-			putAll(valueMap);
+			JsonNode rootNode = objectMapper.readTree(jsonValue);
+			return put(key, rootNode);
 		} catch (IOException e) {
 			throw new RuntimeException("Unable to parse Json value: " + jsonValue + ". Cause: " + e.getMessage(), e);
 		}
+	}
+
+	/**
+	 * Parses JSON node and add it into the data model using the specified key
+	 * as prefix.
+	 *
+	 * @param key
+	 * @param jsonNode
+	 * @return the previous value
+	 */
+	private Object addJsonNode(String key, JsonNode jsonNode) {
+		Object previousValue = null;
+
+		if (jsonNode.isValueNode()) {
+			// End of recursion, since the value is simple
+			if (jsonNode.isTextual()) {
+				previousValue = put(key, jsonNode.textValue());
+			} else if (jsonNode.isBoolean()) {
+				previousValue = put(key, jsonNode.asBoolean());
+			} else if (jsonNode.isNumber()) {
+				previousValue = put(key, jsonNode.asInt());
+			} else if (jsonNode.isNull()) {
+				previousValue = put(key, null);
+			} else if (jsonNode.isBinary()) {
+				try {
+					previousValue = put(key, jsonNode.binaryValue());
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			} else {
+				throw new RuntimeException(
+						"Json simple value type not handled: " + jsonNode.getNodeType() + ", value: " + jsonNode);
+			}
+		} else if (jsonNode.isContainerNode()) {
+			if (jsonNode.isObject()) {
+				MustacheData objectContext = new MustacheData(project, booleanRegexp, supportLists, listIdName,
+						listRegexp, supportJson, jsonValueRegex);
+				previousValue = put(key, objectContext);
+
+				// Iterate on the object fields
+				Iterator<Map.Entry<String, JsonNode>> fieldsIterator = jsonNode.fields();
+				while (fieldsIterator.hasNext()) {
+					Map.Entry<String, JsonNode> field = fieldsIterator.next();
+					String subKey = field.getKey();
+					JsonNode value = field.getValue();
+					System.out.println("Object : Key: " + key + "\tSubKey: " + subKey + "\tValue:" + value);
+
+					// Recursively call this function
+					objectContext.put(subKey, value);
+				}
+			} else if (jsonNode.isArray()) {
+				List<Object> arrayValues = new ArrayList<Object>();
+
+				// Iterate on the array elements
+				Iterator<JsonNode> elementsIterator = jsonNode.elements();
+				int index = 0;
+				while (elementsIterator.hasNext()) {
+					String subTempKey = String.valueOf(index++);
+					JsonNode value = elementsIterator.next();
+					System.out.println("Array  : Key: " + key + "\tValue:" + value);
+
+					if (value.isContainerNode()) {
+						// Create a temporary context to recursively compute the
+						// sub-JSON value
+						MustacheData tempContext = new MustacheData(project, booleanRegexp, supportLists, listIdName,
+								listRegexp, supportJson, jsonValueRegex);
+
+						// Recursively call this function to compute the
+						// sub-JSON
+						// value
+						tempContext.put(subTempKey, value);
+						Object computedValue = tempContext.get(subTempKey);
+						arrayValues.add(computedValue);
+
+					} else {
+						// Simple value, no need of recursion here: simply
+						// stores the value in the array without any indexing
+						arrayValues.add(value);
+					}
+				}
+
+				previousValue = put(key, arrayValues);
+
+			} else {
+				throw new RuntimeException(
+						"Unknown Json container type: " + jsonNode.getNodeType() + ", value: " + jsonNode);
+			}
+		} else {
+			throw new RuntimeException("Unknown Json value type: " + jsonNode.getNodeType() + ", value: " + jsonNode);
+		}
+
+		return previousValue;
 	}
 
 	/**
