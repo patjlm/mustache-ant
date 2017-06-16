@@ -136,21 +136,50 @@ public class MustacheFilterTest {
 	@Test
 	public void testListAndJsonValue() {
 		test(new MustacheFilter(),
-				"mylist = {{mylist}}\n" + "{{#mylist}}\n" + "{{__id__}}.prop1 = {{prop1}}\n"
-						+ "{{__id__}}.prop2 = {{prop2}}\n" + "{{/mylist}}",
-				"mylist = [{prop2=value-1-2, prop1=value-1-1, value={\"prop1\" : \"value-1-1\", \"prop2\" : \"value-1-2\" }, __id__=01}, "
-						+ "{prop2=value-2-2, prop1=value-2-1, value={\"prop1\" : \"value-2-1\", \"prop2\" : \"value-2-2\" }, __id__=02}]\n"
-						+ "01.prop1 = value-1-1\n" + "01.prop2 = value-1-2\n" + "02.prop1 = value-2-1\n"
-						+ "02.prop2 = value-2-2\n",
+				"mylist={{mylist}}\n\n" + "Loop: {{#mylist}}{{__id__}}.prop1 = {{value.prop1}}; "
+						+ "{{__id__}}.prop2 = {{value.prop2}}\n{{/mylist}}",
+				"mylist=[{value={prop2=value-1-2, prop1=value-1-1}, __id__=01}, "
+						+ "{value={prop2=value-2-2, prop1=value-2-1}, __id__=02}]\n\n"
+						+ "Loop: 01.prop1 = value-1-1; 01.prop2 = value-1-2\n"
+						+ "02.prop1 = value-2-1; 02.prop2 = value-2-2\n",
 				context("mylist.01.value@JSON", "{\"prop1\" : \"value-1-1\", \"prop2\" : \"value-1-2\" }",
 						"mylist.02.value@JSON", "{\"prop1\" : \"value-2-1\", \"prop2\" : \"value-2-2\" }"));
+	}
+
+	@Test
+	public void testListAndJsonComplexValue() {
+		MustacheFilter m = new MustacheFilter();
+		m.setListRegex("(.+?)\\[([\\d\\.]+)\\]\\.(.+)");
+		test(m, "{{#mylist}}" + "{" + "\"key\"=\"{{__id__}}\", " + "\"msg\"=\"{{value.msg}}\", "
+				+ "\"simple\"=\"{{value.simple}}\", " + "\"ar\"=\"{{value.ar}}\"" + "}" +
+				// add a comma and a space only if it's not the last item in the
+				// list
+				"{{^-last}}, {{/-last}}" + "{{/mylist}}",
+
+				"{\"key\"=\"01\", \"msg\"=\"hello\", \"simple\"=\"true\", \"ar\"=\"a1\"}, "
+						+ "{\"key\"=\"02\", \"msg\"=\"world\", \"simple\"=\"20\", \"ar\"=\"[\"a1\"]\"}, "
+						+ "{\"key\"=\"03\", \"msg\"=\"two words\", \"simple\"=\"true\", \"ar\"=\"[\"a1\", \"a2\"]\"}, "
+
+						// Note: using complex JSON with sub-levels, the double
+						// quotes disappear around the internal keys (sub-simple
+						// and sub-ar)... to be checked how to fix this
+						+ "{\"key\"=\"04\", \"msg\"=\"recursive json\", \"simple\"=\"false\", \"ar\"=\"[{sub-simple=false, sub-ar=[\"a1\", \"a2\"]}, {sub-simple=true, sub-ar=[\"b1\", \"b2\"]}]\"}",
+
+				context("mylist[01].value@JSON", "{\"msg\" : \"hello\",  \"simple\" : true, \"ar\" : \"a1\" }",
+						"mylist[02].value@JSON", "{\"msg\" : \"world\",  \"simple\" : 20, \"ar\" : [\"a1\"] }",
+						"mylist[03].value@JSON",
+						"{\"msg\" : \"two words\", \"simple\" : \"true\", \"ar\" : [\"a1\", \"a2\"] }",
+						"mylist[04].value@JSON",
+						"{\"msg\" : \"recursive json\", \"simple\" : \"false\", \"ar\" : [{\"sub-simple\" :\"false\", \"sub-ar\" : [\"a1\", \"a2\"]}, {\"sub-simple\" :\"true\", \"sub-ar\" : [\"b1\", \"b2\"]}] }"
+
+		));
 	}
 
 	@Test
 	public void testListUsingAlphanumericIdAndJsonValue() {
 		MustacheFilter m = new MustacheFilter();
 		m.setListRegex("(.+?)\\[(\\w+)\\]\\.(.+)");
-		test(m, "p1={{p1}}\np2={{p2}}\n{{#mylist}}{{__id__}}: {{p1}}-{{p2}}\n{{/mylist}}",
+		test(m, "p1={{p1}}\np2={{p2}}\n{{#mylist}}{{__id__}}: {{value.p1}}-{{value.p2}}\n{{/mylist}}",
 				"p1=default.p1\np2=default.p2\na1: a.1-a.2\nb1: b.1-b.2\n",
 				context("p1", "default.p1", "p2", "default.p2", "mylist[a1].value@JSON",
 						"{\"p1\":\"a.1\", \"p2\":\"a.2\"}", "mylist[b1].value@JSON",

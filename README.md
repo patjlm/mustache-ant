@@ -248,7 +248,69 @@ Which outputs:
 	02.prop1 = value-2-1
 	02.prop2 = value-2-2
 
+You can also have more complex JSON structure. Let's consider the following properties:
+
+	mylist[01].value@JSON = { "msg" : "hello", "simple" : true, "ar" : "a1" }
+	mylist[02].value@JSON = { "msg" : "world", "simple" : 20, "ar" : ["a1"] }
+	mylist[03].value@JSON = { "msg" : "two words", "simple" : "true", "ar" : ["a1", "a2"] }
+	mylist[04].value@JSON = { "msg" : "recursive json", "simple" : "false", 
+														"ar" : [
+																{ "sub-simple" : "false", "sub-ar" : ["a1", "a2"] }, 
+																{ "sub-simple" : "true", "sub-ar" : ["b1", "b2"] }
+														 ]
+													}
+
+The template will be the following:
+
+	{{#mylist}}
+		{ 
+			"key" = "{{__id__}}",
+			"msg" = "{{value.msg}}",
+			"simple" = "{{value.simple}}",
+			"ar" = "{{value.ar}}"
+		},
+	{{/mylist}}
+
+Which outputs:
+
+		{
+			"key" = "01",
+			"msg" = "hello",
+			"simple" = "true",
+			"ar" = "a1"},
+		},
+		{
+			"key" = "02",
+			"msg" = "world",
+			"simple" = "20",
+			"ar" = ["a1"]
+		},
+		{
+			"key" = "03",
+			"msg" = "two words",
+			"simple" = "true",
+			"ar" = ["a1", "a2"]
+		},
+		{
+			"key" = "04",
+			"msg" = "recursive json",
+			"simple" = "false",
+			"ar" = [
+				{
+					sub-simple = false,
+					sub-ar = ["a1", "a2"]
+				}, 
+				{
+					sub-simple = true,
+					sub-ar = ["b1", "b2"]
+				}
+			]
+		}
+
+Note: using complex JSON with sub-levels, the double quotes disappear around the internal keys (sub-simple and sub-ar)... to be checked how to fix this
+
 You can override the default JSON key pattern by using the jsonValueRegex option.
 For example, if you want to suffix all your JSON properties with "!JSON", you could use this kind of pattern:
 
 	booleanRegex="^(.+)(!JSON)$"
+
