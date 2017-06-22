@@ -26,7 +26,8 @@ BCB94FEB is is the key name in this example. you may have to specify 0xBCB94FEB.
 
 # Maven release preparation
 
-Ensure first that everything is commited, and that the version in pom.xml is a SNAPSHOT
+Ensure first that everything is commited, and that the version in pom.xml is a SNAPSHOT.
+Note: the following procedure only works from a clone of the central repository (not from a fork).
 
 	mvn clean
 	mvn -DpushChanges=false release:prepare
@@ -41,6 +42,10 @@ Then push the git tags and the changes to origin.
 # Maven release perform
 
 	mvn release:perform
+	
+# Rollback a release
+
+	mvn release:rollback
 	 
 # Sonatype staging
 
