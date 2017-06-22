@@ -36,6 +36,7 @@ Ensure first that everything is commited, and that the version in pom.xml is a S
 Then push the git tags and the changes to origin.
 
 	git push
+	git push origin <new tag>
 
 # Maven release perform
 
