@@ -26,18 +26,20 @@ BCB94FEB is is the key name in this example. you may have to specify 0xBCB94FEB.
 
 # Maven release preparation
 
-Ensure first that evrything is commited, and that the version in pom.xml is a SNAPSHOT
+Ensure first that everything is commited, and that the version in pom.xml is a SNAPSHOT
 
 	mvn clean
 	mvn -DpushChanges=false release:prepare
 	
--DpushChanges=false is because we do not have ssh-agent runnig to store the git passphrase.
+-DpushChanges=false is because we do not have ssh-agent running to store the git passphrase.
 
-Then push the git tags an the changes to origin.
+Then push the git tags and the changes to origin.
+
+	git push
 
 # Maven release perform
 
-	 mvn release:perform
+	mvn release:perform
 	 
 # Sonatype staging
 
