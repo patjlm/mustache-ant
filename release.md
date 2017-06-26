@@ -1,6 +1,9 @@
-Short summary on how to perform a release...
+# Release preparation
 
-# One timer: setup gpg
+Short summary on how to perform a release...
+This procedure is an extract of [this one](http://datumedge.blogspot.fr/2012/05/publishing-from-github-to-maven-central.html).
+
+## One time: setup gpg
 
 * gpg.exe must be in the path
 * create your key
@@ -24,7 +27,43 @@ BCB94FEB is is the key name in this example. you may have to specify 0xBCB94FEB.
 
 	gpg --keyserver hkp://pgp.mit.edu --send-key KEYNAME
 
-# Maven release preparation
+## One time: setup GPG in your user maven settings
+
+* Edit or create ~/.m2/settings.xml to include your credentials: 
+
+	<settings xmlns="http://maven.apache.org/SETTINGS/1.0.0"
+	  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	  xsi:schemaLocation="http://maven.apache.org/SETTINGS/1.0.0
+                      http://maven.apache.org/xsd/settings-1.0.0.xsd">
+	  <servers>
+	    <server>
+	      <id>sonatype-nexus-snapshots</id>
+	      <username>myusername</username>
+	      <password>mypassword</password>
+	    </server>
+	    <server>
+	      <id>sonatype-nexus-staging</id>
+	      <username>myusername</username>
+	      <password>mypassword</password>
+	    </server>
+	  </servers>
+
+	  <profiles>
+	    <profile>
+	      <id>sign</id>
+	      <activation>
+	        <activeByDefault>true</activeByDefault>
+	      </activation>
+	      <properties>
+		    <gpg.keyname>myGPGuser</gpg.keyname>
+	        <gpg.passphrase>mypassphrase</gpg.passphrase>
+	      </properties>
+	    </profile>
+	  </profiles>
+	</settings>
+
+
+## Maven release preparation
 
 Ensure first that everything is commited, and that the version in pom.xml is a SNAPSHOT.
 Note: the following procedure only works from a clone of the central repository (not from a fork).
@@ -39,15 +78,17 @@ Then push the git tags and the changes to origin.
 	git push
 	git push origin <new tag>
 
-# Maven release perform
+## Maven release perform
 
 	mvn release:perform
 	
-# Rollback a release
+## Rollback a release
 
 	mvn release:rollback
+	git tag -d <tag>
+	git push origin :refs/tags/<tag>
 	 
-# Sonatype staging
+## Sonatype staging
 
 The files are now staged on [https://oss.sonatype.org/](https://oss.sonatype.org/).
 
