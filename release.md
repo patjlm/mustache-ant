@@ -31,7 +31,7 @@ BCB94FEB is is the key name in this example. you may have to specify 0xBCB94FEB.
 
 * Edit or create ~/.m2/settings.xml to include your credentials: 
 
-	<settings xmlns="http://maven.apache.org/SETTINGS/1.0.0"
+	``<settings xmlns="http://maven.apache.org/SETTINGS/1.0.0"
 	  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	  xsi:schemaLocation="http://maven.apache.org/SETTINGS/1.0.0
                       http://maven.apache.org/xsd/settings-1.0.0.xsd">
@@ -60,7 +60,7 @@ BCB94FEB is is the key name in this example. you may have to specify 0xBCB94FEB.
 	      </properties>
 	    </profile>
 	  </profiles>
-	</settings>
+	</settings>``
 
 
 ## Maven release preparation
