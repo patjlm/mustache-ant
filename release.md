@@ -31,7 +31,7 @@ BCB94FEB is is the key name in this example. you may have to specify 0xBCB94FEB.
 
 * Edit or create ~/.m2/settings.xml to include your credentials: 
 
-``
+```xml
 	<settings xmlns="http://maven.apache.org/SETTINGS/1.0.0"
 	  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	  xsi:schemaLocation="http://maven.apache.org/SETTINGS/1.0.0
@@ -62,7 +62,7 @@ BCB94FEB is is the key name in this example. you may have to specify 0xBCB94FEB.
 	    </profile>
 	  </profiles>
 	</settings>
-``
+```
 
 
 ## Maven release preparation
@@ -95,7 +95,7 @@ Then push the git tags and the changes to origin.
 The files are now staged on [https://oss.sonatype.org/](https://oss.sonatype.org/).
 
 * Access [https://oss.sonatype.org/](https://oss.sonatype.org/)
-* Log in
+* Log in (create a Sontatype account [here](https://issues.sonatype.org/secure/Signup!default.jspa))
 * Click on "Staging Repositories"
 * Select your repository
 * Check the content and click on the "Close" button on top
