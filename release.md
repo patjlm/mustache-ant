@@ -32,36 +32,36 @@ BCB94FEB is is the key name in this example. you may have to specify 0xBCB94FEB.
 * Edit or create ~/.m2/settings.xml to include your credentials: 
 
 ```xml
-	<settings xmlns="http://maven.apache.org/SETTINGS/1.0.0"
-	  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	  xsi:schemaLocation="http://maven.apache.org/SETTINGS/1.0.0
-                      http://maven.apache.org/xsd/settings-1.0.0.xsd">
-	  <servers>
-	    <server>
-	      <id>sonatype-nexus-snapshots</id>
-	      <username>myusername</username>
-	      <password>mypassword</password>
-	    </server>
-	    <server>
-	      <id>sonatype-nexus-staging</id>
-	      <username>myusername</username>
-	      <password>mypassword</password>
-	    </server>
-	  </servers>
+<settings xmlns="http://maven.apache.org/SETTINGS/1.0.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/SETTINGS/1.0.0
+				  http://maven.apache.org/xsd/settings-1.0.0.xsd">
+  <servers>
+	<server>
+	  <id>sonatype-nexus-snapshots</id>
+	  <username>myusername</username>
+	  <password>mypassword</password>
+	</server>
+	<server>
+	  <id>sonatype-nexus-staging</id>
+	  <username>myusername</username>
+	  <password>mypassword</password>
+	</server>
+  </servers>
 
-	  <profiles>
-	    <profile>
-	      <id>sign</id>
-	      <activation>
-	        <activeByDefault>true</activeByDefault>
-	      </activation>
-	      <properties>
-		    <gpg.keyname>myGPGuser</gpg.keyname>
-	        <gpg.passphrase>mypassphrase</gpg.passphrase>
-	      </properties>
-	    </profile>
-	  </profiles>
-	</settings>
+  <profiles>
+	<profile>
+	  <id>sign</id>
+	  <activation>
+		<activeByDefault>true</activeByDefault>
+	  </activation>
+	  <properties>
+		<gpg.keyname>myGPGuser</gpg.keyname>
+		<gpg.passphrase>mypassphrase</gpg.passphrase>
+	  </properties>
+	</profile>
+  </profiles>
+</settings>
 ```
 
 
