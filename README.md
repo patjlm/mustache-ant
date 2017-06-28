@@ -10,7 +10,7 @@ Installation
 ============
 
 Download the mustache-ant jar from the
-[Maven Central Repository](http://search.maven.org/remotecontent?filepath=com/github/patjlm/mustache-ant/1.1.1/mustache-ant-1.1.1.jar) or the [Sonatype release repository](https://oss.sonatype.org/content/repositories/releases/com/github/patjlm/mustache-ant/1.1.1/mustache-ant-1.1.1.jar),
+[Maven Central Repository](http://search.maven.org/remotecontent?filepath=com/github/patjlm/mustache-ant/1.1.0/mustache-ant-1.1.0.jar) or the [Sonatype release repository](https://oss.sonatype.org/content/repositories/releases/com/github/patjlm/mustache-ant/1.1.0/mustache-ant-1.1.0.jar),
 store it somewhere accessible to your ant script (${mustache-ant.jar} below).
 
 You can then define the mustache filter in your ant script as follows:
@@ -62,7 +62,7 @@ All parameters are optional.
 | strictSections    | As JMustache strictSections(), defines if section referring to a non-defined value should fail | false |
 | escapeHTML        | As JMustache escapeHTML(), defines if outputed HTML should be escaped         | false              |
 | partialPath       | Since v1.0.0. A path-like structure in which [partials](https://github.com/samskivert/jmustache#partials) (aka sub-templates) can be searched for. Non-directories path elements will be ignored | None. Partials not supported by default |
-| emptyStringIsFalse| Since v1.1.1. Boolean (true or false): should empty string be treated as a false value, as in JavaScript mustache implementation. | false              |
+| emptyStringIsFalse| Since v1.1.0. Boolean (true or false): should empty string be treated as a false value, as in JavaScript mustache implementation. | false              |
 
 PartialPath can also be defined as an [XML element](https://ant.apache.org/manual/using.html#path) inside the mustache type.
 For example:
@@ -144,7 +144,7 @@ With such regex, the previous list would be written
 Empty value
 ===========
 
-The empty value is supported since V1.1.1 by setting the emptyStringIsFalse option to "true".
+The empty value is supported since V1.1.0 by setting the emptyStringIsFalse option to "true".
 
 Consider the following properties:
 
@@ -212,7 +212,7 @@ You can then use it in your template:
 JSON values
 ===========
 
-The JSON values are supported since V1.1.1.
+The JSON values are supported since V1.1.0.
 
 Consider the following properties:
 
