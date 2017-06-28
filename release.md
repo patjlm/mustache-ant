@@ -25,7 +25,7 @@ BCB94FEB is is the key name in this example. you may have to specify 0xBCB94FEB.
 
 * send the private key to public servers:
 
-	gpg --keyserver hkp://pgp.mit.edu --send-key KEYNAME
+	gpg --keyserver hkp://pgp.mit.edu --send-key 0xKEYNAME
 
 ## One time: setup GPG in your user maven settings
 
@@ -56,7 +56,7 @@ BCB94FEB is is the key name in this example. you may have to specify 0xBCB94FEB.
 		<activeByDefault>true</activeByDefault>
 	  </activation>
 	  <properties>
-		<gpg.keyname>myGPGuser</gpg.keyname>
+		<gpg.keyname>0xKEYNAME</gpg.keyname>
 		<gpg.passphrase>mypassphrase</gpg.passphrase>
 	  </properties>
 	</profile>
@@ -70,19 +70,19 @@ BCB94FEB is is the key name in this example. you may have to specify 0xBCB94FEB.
 Ensure first that everything is commited, and that the version in pom.xml is a SNAPSHOT.
 Note: the following procedure only works from a clone of the central repository (not from a fork).
 
-	mvn clean
-	mvn -DpushChanges=false release:prepare
+	mvn clean release:prepare -DpushChanges=false
 	
 -DpushChanges=false is because we do not have ssh-agent running to store the git passphrase.
 
 Then push the git tags and the changes to origin.
 
 	git push
-	git push origin <new tag>
+	git push origin <new tag>   # Push to your fork
+	git push central <new tag>  # Push to the central repository
 
 ## Maven release perform
 
-Note that you need write permission in Sonatype on the 'com.github.patjlm' repository to perform this task.
+Note that you need write permission in Sonatype on the "com.github.patjlm" repository to perform this task.
 
 	mvn release:perform
 	
@@ -97,12 +97,10 @@ Note that you need write permission in Sonatype on the 'com.github.patjlm' repos
 The files are now staged on [https://oss.sonatype.org/](https://oss.sonatype.org/).
 
 * Access [https://oss.sonatype.org/](https://oss.sonatype.org/)
-* Log in (create a Sontatype account [here](https://issues.sonatype.org/secure/Signup!default.jspa))
+* Log in (create a Sonatype account [here](https://issues.sonatype.org/secure/Signup!default.jspa))
 * Click on "Staging Repositories"
-* Select your repository ('com.github.patjlm')
+* Select your repository ("com.github.patjlm")
 * Check the content and click on the "Close" button on top
-* Wait for the email: "Nexus: Staging Completed"
-* Go back on the "Staging Repositories"
-* Select your repository
-* Check and click on "Release"
-* After you successfully release, your component will be published to Central, typically within 10 minutes, though updates to search.maven.org can take up to two hours.
+* Refresh the repository ("Refresh button") after ~1 minute.
+* Check that your repository is closed (in "Activity" tab) and click on "Release"
+* After you successfully release, your component will be published to Central, typically within 10 minutes, though updates to search.maven.org can take up to two hours. Check that your repository appears in [Sonatype](https://oss.sonatype.org/content/repositories/releases/com/github/patjlm/mustache-ant/) and in [Maven central repository](https://repo1.maven.org/maven2/com/github/patjlm/mustache-ant/)
