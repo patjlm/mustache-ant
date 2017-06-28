@@ -82,6 +82,8 @@ Then push the git tags and the changes to origin.
 
 ## Maven release perform
 
+Note that you need write permission in Sonatype on the 'com.github.patjlm' repository to perform this task.
+
 	mvn release:perform
 	
 ## Rollback a release
@@ -97,9 +99,10 @@ The files are now staged on [https://oss.sonatype.org/](https://oss.sonatype.org
 * Access [https://oss.sonatype.org/](https://oss.sonatype.org/)
 * Log in (create a Sontatype account [here](https://issues.sonatype.org/secure/Signup!default.jspa))
 * Click on "Staging Repositories"
-* Select your repository
+* Select your repository ('com.github.patjlm')
 * Check the content and click on the "Close" button on top
 * Wait for the email: "Nexus: Staging Completed"
 * Go back on the "Staging Repositories"
 * Select your repository
 * Check and click on "Release"
+* After you successfully release, your component will be published to Central, typically within 10 minutes, though updates to search.maven.org can take up to two hours.
